@@ -6,11 +6,11 @@ public class EditGui : MonoBehaviour {
 
     private Text display;
 
-	// Use this for initialization
 	void Start () {
         display = GetComponent<Text>();
 	}
 
+    // PUBLIC FUNCTIONS
     public void ChangeText(string newText) {
         display.text = newText;
     }
