@@ -3,8 +3,13 @@ using System.Collections;
 
 public class Character : MonoBehaviour {
 
+    // Information of itself
     public System.String characterName;
     public GameObject characterInfo;
+    private GameObject consoleInfo;
+
+    public bool leftTeam;
+    private bool facingEnemies = true;
 
     private EditGui displayGui;
     private System.String diplayInfo;
@@ -27,6 +32,7 @@ public class Character : MonoBehaviour {
     public GameObject[] targets = new GameObject[3];
     public GameObject[] allys = new GameObject[2];
     private GameObject source;
+    private GameObject turnTarget;
 
     // Auxiliable variables
     private SpriteRenderer spriteRenderer;
@@ -34,17 +40,32 @@ public class Character : MonoBehaviour {
     private float damageAnimationTimeout = 0.0f;
     private bool damageAnimation = false;
 
+    private int state = 3; // 0: Move ahead - 1: wait - 2: move back - 3: do nothing
+    private bool moving = false;
+    private float moveDistance;
+    private float waitTime = 1.0f;
+    private bool dealedDamage = false;
+
+
+    // Constant values (so I can change things faster)
+    private const float MOVE_DIST = 0.8f;
+    private const float MOVE_SPEED = 2f;
+    private const float DAMAGE_ANIMATION_SPEED = 1.2f;
+
 	void Start () {
         hp_current = hp_max;
         mp_current = mp_max;
 
         displayGui = characterInfo.GetComponent<EditGui>();
 
-        if (this.characterName == "Tomato A") {
+        if (this.characterName == "Tomato B") {
             MyTurn(targets[0], 0);
         }
 
         spriteRenderer = this.GetComponent<SpriteRenderer>();
+
+        // Taking the console
+        consoleInfo = GameObject.Find("Canvas/Console");
 	}
 
     void Update() {
@@ -56,7 +77,7 @@ public class Character : MonoBehaviour {
         // Damage animation
         spriteRenderer.color = new Color(1, 1 - (damageAnimationTimeout), 1 - (damageAnimationTimeout), 1);
         if (damageAnimation) {
-            damageAnimationTimeout -= Time.deltaTime * 1.2f;
+            damageAnimationTimeout -= Time.deltaTime * DAMAGE_ANIMATION_SPEED;
             if (damageAnimationTimeout <= 0) {
                 damageAnimationTimeout = 0;
                 damageAnimation = false;
@@ -65,6 +86,67 @@ public class Character : MonoBehaviour {
             //print("Damage animation timeout: " + damageAnimationTimeout);
             //print(spriteRenderer.color);
         }
+
+        if (state < 3) { // If must do something
+
+            if (moving) { // If is moving
+                float frameMove = Time.deltaTime * MOVE_SPEED;
+                moveDistance -= frameMove;
+                if (moveDistance < 0) { // in case of moving more than expected
+                    frameMove += moveDistance;
+                    moving = false;
+                }
+
+                if (leftTeam == facingEnemies) { // Move to right
+                    this.transform.position += new Vector3(frameMove, 0f, 0f);
+                }
+                else { // Move to left
+                    this.transform.position -= new Vector3(frameMove, 0f, 0f);
+                }
+
+            }
+
+            switch (state) { // Check if will change state
+                case 0: // Move ahead
+                    if (!moving) { //finished moving
+                        state++;
+                        waitTime = 0.8f;
+                    }
+                    break;
+                case 1: // Wait and execute command
+                    waitTime -= Time.deltaTime;
+                    if (!dealedDamage && waitTime <= 0.5f) {
+                        // Attacking the target
+                        Character targetInfo = turnTarget.GetComponent<Character>();
+                        //print(this.gameObject + " attacking");
+                        targetInfo.TakingAttack(this.attack, this.gameObject);
+                        // finished damage
+                        dealedDamage = true;
+                    }
+                    if (waitTime <= 0) {
+                        state++;
+                        facingEnemies = false;
+                        this.gameObject.GetComponent<SpriteRenderer>().flipX = !(leftTeam == facingEnemies);
+                        moving = true;
+                        moveDistance = MOVE_DIST;
+                    }
+                    break;
+                case 2: // Move back
+                    if (!moving) { //finished moving
+                        state++;
+                        moveDistance = MOVE_DIST;
+                        facingEnemies = true;
+                        this.gameObject.GetComponent<SpriteRenderer>().flipX = !(leftTeam == facingEnemies);
+                        finishedAnimation[0] = true;
+
+                        if (finishedAnimation[0] && finishedAnimation[1]) {
+                            print("Both animations finished");
+                        }
+                    }
+                    break;
+            }
+        }
+        
 
     }
 
@@ -86,6 +168,10 @@ public class Character : MonoBehaviour {
         damageAnimationTimeout = 1.0f;
         damageAnimation = true;
 
+        // Printing on Console
+        consoleInfo.GetComponent<EditGui>().AddText(this.source.GetComponent<Character>().characterName +
+            " attacked " + this.characterName + ". Damage: " + damage + System.Environment.NewLine);
+
         //print(this.gameObject + " taking damage");
         //print(this.source + " was attacker");
     }
@@ -101,12 +187,14 @@ public class Character : MonoBehaviour {
     public void MyTurn(GameObject target, int command) {
         finishedAnimation[0] = false;
         finishedAnimation[1] = false;
-        // Attacking the target
-        Character targetInfo = target.GetComponent<Character>();
-        //print(this.gameObject + " attacking");
-        targetInfo.TakingAttack(this.attack, this.gameObject);
 
-        finishedAnimation[0] = true;
+        // Memorizing the target, the damage will be dealt on update()
+        turnTarget = target;
+
+        state = 0;
+        moveDistance = MOVE_DIST;
+        dealedDamage = false;
+        moving = true;
     }
 	
 }
