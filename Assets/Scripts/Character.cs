@@ -34,11 +34,16 @@ public class Character : MonoBehaviour {
     private GameObject source;
     private GameObject turnTarget;
 
+    // Command variable
+    private int command = 0; // See commands on const values
+    private int subCommand = 0; // May be a skill or item ID
+
     // Auxiliable variables
     private SpriteRenderer spriteRenderer;
     private bool[] finishedAnimation = new bool[2]; // 0 is self, 1 is target
     private float damageAnimationTimeout = 0.0f;
     private bool damageAnimation = false;
+    private bool healingAnimation = false;
 
     private int state = 3; // 0: Move ahead - 1: wait - 2: move back - 3: do nothing
     private bool moving = false;
@@ -52,6 +57,21 @@ public class Character : MonoBehaviour {
     private const float MOVE_SPEED = 2f;
     private const float DAMAGE_ANIMATION_SPEED = 1.2f;
 
+    private const int NO_COMMAND = 0;
+    private const int DEFENDING = 1;
+    private const int ATTACKING = 2;
+    private const int USING_SKILL = 3;
+    private const int USING_ITEM = 4;
+
+    private const int SIMPLE_COMMAND = 0;
+    private const int WEAK_SKILL = 1;
+    private const int STRONG_SKILL = 2;
+    private const int HEALING_SKILL = 3;
+    // private const int WATER_BOMB = 3;
+    // private const int FIRE_BOMB = 4;
+    // private const int EARTH_BOMB = 5;
+    // private const int WIND_BOMB = 6;
+
 	void Start () {
         hp_current = hp_max;
         mp_current = mp_max;
@@ -59,7 +79,7 @@ public class Character : MonoBehaviour {
         displayGui = characterInfo.GetComponent<EditGui>();
 
         if (this.characterName == "Tomato B") {
-            MyTurn(targets[0], 0);
+            MyTurn(targets[0], USING_SKILL, WEAK_SKILL);
         }
 
         spriteRenderer = this.GetComponent<SpriteRenderer>();
@@ -75,7 +95,6 @@ public class Character : MonoBehaviour {
         displayGui.ChangeText(diplayInfo);
 
         // Damage animation
-        spriteRenderer.color = new Color(1, 1 - (damageAnimationTimeout), 1 - (damageAnimationTimeout), 1);
         if (damageAnimation) {
             damageAnimationTimeout -= Time.deltaTime * DAMAGE_ANIMATION_SPEED;
             if (damageAnimationTimeout <= 0) {
@@ -85,6 +104,18 @@ public class Character : MonoBehaviour {
             }
             //print("Damage animation timeout: " + damageAnimationTimeout);
             //print(spriteRenderer.color);
+            spriteRenderer.color = new Color(1, 1 - (damageAnimationTimeout), 1 - (damageAnimationTimeout), 1);
+        }
+
+        // Healing animation
+        if (healingAnimation) {
+            damageAnimationTimeout -= Time.deltaTime * DAMAGE_ANIMATION_SPEED;
+            if (damageAnimationTimeout <= 0) {
+                damageAnimationTimeout = 0;
+                healingAnimation = false;
+                this.source.GetComponent<Character>().TakeDamageAnimationFinished();
+            }
+            spriteRenderer.color = new Color(1 - (damageAnimationTimeout), 1, 1 - (damageAnimationTimeout), 1);
         }
 
         if (state < 3) { // If must do something
@@ -116,13 +147,25 @@ public class Character : MonoBehaviour {
                 case 1: // Wait and execute command
                     waitTime -= Time.deltaTime;
                     if (!dealedDamage && waitTime <= 0.5f) {
-                        // Attacking the target
-                        Character targetInfo = turnTarget.GetComponent<Character>();
-                        //print(this.gameObject + " attacking");
-                        targetInfo.TakingAttack(this.attack, this.gameObject);
-                        // finished damage
+                        // Select the command to execute
+                        switch (command) {
+                            case DEFENDING:
+                                Defend();
+                                break;
+                            case ATTACKING:
+                                Attack();
+                                break;
+                            case USING_SKILL:
+                                UseSkill();
+                                break;
+                            case USING_ITEM:
+                                UseItem();
+                                break;
+                        }
+                        // finished command
                         dealedDamage = true;
-                    }
+                        this.command = NO_COMMAND;
+                    } 
                     if (waitTime <= 0) {
                         state++;
                         facingEnemies = false;
@@ -150,12 +193,55 @@ public class Character : MonoBehaviour {
 
     }
 
-    // PUBLIC FUNCTIONS
-    public void InitializeCharacter() {
-        // Initialize all variables (stats)
-        return;
+    public void MyTurn(GameObject target, int command, int subCommand) {
+        finishedAnimation[0] = false;
+        finishedAnimation[1] = false;
+
+        // Memorizing the target, the damage will be dealt on update()
+        turnTarget = target;
+        this.command = command;
+        this.subCommand = subCommand;
+
+        state = 0;
+        moveDistance = MOVE_DIST;
+        dealedDamage = false;
+        moving = true;
     }
 
+    private void Attack() {
+        // Attacking the target
+        Character targetInfo = turnTarget.GetComponent<Character>();
+        //print(this.gameObject + " attacking");
+        targetInfo.TakingAttack(this.attack, this.gameObject);
+    }
+
+    private void Defend() {
+
+    }
+
+    private void UseSkill() {
+        // Attacking the target
+        Character targetInfo = turnTarget.GetComponent<Character>();
+        //print(this.gameObject + " attacking");
+        targetInfo.TakingSkill(this.magicPower, this.weakSkill, this.subCommand, this.gameObject);
+        
+        // Removing MP
+        if (subCommand == WEAK_SKILL) {
+            this.mp_current -= 50;
+        }
+        else if (subCommand == STRONG_SKILL) {
+            this.mp_current -= 110;
+        }
+        else if (subCommand == HEALING_SKILL) {
+            this.mp_current -= 80;
+        }
+    }
+
+    private void UseItem() {
+
+    }
+
+    // CALLED FROM ATTACKER
     public void TakingAttack(int atkValue, GameObject source) {
         // Damage calculation
         int damage = (atkValue - this.defense) > 0 ? (atkValue - this.defense) : 0;
@@ -176,6 +262,75 @@ public class Character : MonoBehaviour {
         //print(this.source + " was attacker");
     }
 
+    public void TakingSkill(int magicValue, int element, int subCommand, GameObject source) {
+        // Attacker
+        this.source = source;
+
+        if (subCommand == STRONG_SKILL) {
+            magicValue *= 2;
+        }
+        if (subCommand != HEALING_SKILL) {
+            // Checking advantage or disvantages
+            switch (element) {
+                case 0: // Physical damage
+                    if (physicalResist == 0) // weak
+                        magicValue *= 2;
+                    else if (physicalResist == 2) // strong
+                        magicValue /= 2;
+                    break;
+                case 1: // Water damage
+                    if (waterResist == 0) // weak
+                        magicValue *= 2;
+                    else if (waterResist == 2) // strong
+                        magicValue /= 2;
+                    break;
+                case 2: // Fire damage
+                    if (fireResist == 0) // weak
+                        magicValue *= 2;
+                    else if (fireResist == 2) // strong
+                        magicValue /= 2;
+                    break;
+                case 3: // Earth damage
+                    if (earthResist == 0) // weak
+                        magicValue *= 2;
+                    else if (earthResist == 2) // strong
+                        magicValue /= 2;
+                    break;
+                case 4: // Wind damage
+                    if (windResist == 0) // weak
+                        magicValue *= 2;
+                    else if (windResist == 2) // strong
+                        magicValue /= 2;
+                    break;
+            }
+            // Damage calculation
+            int damage = (magicValue - this.resistance) > 0 ? (magicValue - this.resistance) : 0;
+            hp_current -= damage;
+
+            // Damage animation
+            damageAnimationTimeout = 1.0f;
+            damageAnimation = true;
+
+            // Printing on Console
+            consoleInfo.GetComponent<EditGui>().AddText(this.source.GetComponent<Character>().characterName +
+                " used skill on " + this.characterName + ". Damage: " + damage + System.Environment.NewLine);
+        }
+        else { // Healing skill
+            int healValue = magicValue / 2;
+            hp_current += healValue;
+            /*if (hp_current > hp_max)
+                hp_current = hp_max;*/
+
+            // Healing animation
+            damageAnimationTimeout = 1.0f;
+            healingAnimation = true;
+
+            // Printing on Console
+            consoleInfo.GetComponent<EditGui>().AddText(this.source.GetComponent<Character>().characterName +
+                " used skill on " + this.characterName + ". Healed: " + healValue + System.Environment.NewLine);
+        }
+    }
+
     public void TakeDamageAnimationFinished() {
         finishedAnimation[1] = true;
 
@@ -183,18 +338,4 @@ public class Character : MonoBehaviour {
             print("Both animations finished");
         }
     }
-
-    public void MyTurn(GameObject target, int command) {
-        finishedAnimation[0] = false;
-        finishedAnimation[1] = false;
-
-        // Memorizing the target, the damage will be dealt on update()
-        turnTarget = target;
-
-        state = 0;
-        moveDistance = MOVE_DIST;
-        dealedDamage = false;
-        moving = true;
-    }
-	
 }
