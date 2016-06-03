@@ -213,10 +213,17 @@ public class Character : MonoBehaviour {
         this.command = command;
         this.subCommand = subCommand;
 
-        state = 0;
-        moveDistance = MOVE_DIST;
-        dealedDamage = false;
-        moving = true;
+        if (this.command != DEFENDING) { // Doing damage or heal
+            state = 0;
+            moveDistance = MOVE_DIST;
+            dealedDamage = false;
+            moving = true;
+        }
+        else { // is defending
+            consoleInfo.GetComponent<EditGui>().AddText(this.characterName + " is defending.");
+            //print(this.characterName + " is defending.");
+            // call next!!
+        }
     }
 
     private void Attack() {
@@ -255,8 +262,13 @@ public class Character : MonoBehaviour {
 
     // CALLED FROM ATTACKER
     public void TakingAttack(int atkValue, GameObject source) {
-        // Damage calculation
-        int damage = (atkValue - this.defense) > 0 ? (atkValue - this.defense) : 0;
+        int damage;
+
+        // Check if is defending
+        if (this.command == DEFENDING)
+            damage = (atkValue - this.defense * 2) > 0 ? (atkValue - this.defense * 2) : 0; // Damage calculation
+        else // No defending - normal damage
+            damage = (atkValue - this.defense) > 0 ? (atkValue - this.defense) : 0; // Damage calculation
         hp_current -= damage;
 
         // Attacker
@@ -289,7 +301,11 @@ public class Character : MonoBehaviour {
                 magicValue /= 2;
 
             // Damage calculation
-            int damage = (magicValue - this.resistance) > 0 ? (magicValue - this.resistance) : 0;
+            int damage;
+            if (this.command == DEFENDING)
+                damage = (magicValue - this.resistance * 2) > 0 ? (magicValue - this.resistance * 2) : 0;
+            else // No defending - normal damage
+                damage = (magicValue - this.resistance) > 0 ? (magicValue - this.resistance) : 0;
             hp_current -= damage;
 
             // Damage animation
