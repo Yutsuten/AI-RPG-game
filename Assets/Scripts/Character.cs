@@ -21,12 +21,13 @@ public class Character : MonoBehaviour {
     private float hp_current, mp_current;
 
     // Resistances - 0: weak, 1: normal, 2: strong
-    public int physicalResist,
-        waterResist, fireResist,
-        earthResist, windResist;
+    public int[] elementResist = new int[5];
 
     // Skills - 0: physical, 1: water, 2: fire, 3: earth, 4: wind
     public int weakSkill, strongSkill;
+
+    // Items
+    private Item inventory;
 
     // Targets link
     public GameObject[] targets = new GameObject[3];
@@ -51,7 +52,6 @@ public class Character : MonoBehaviour {
     private float waitTime = 1.0f;
     private bool dealedDamage = false;
 
-
     // Constant values (so I can change things faster)
     private const float MOVE_DIST = 0.8f;
     private const float MOVE_SPEED = 2f;
@@ -67,19 +67,30 @@ public class Character : MonoBehaviour {
     private const int WEAK_SKILL = 1;
     private const int STRONG_SKILL = 2;
     private const int HEALING_SKILL = 3;
-    // private const int WATER_BOMB = 3;
-    // private const int FIRE_BOMB = 4;
-    // private const int EARTH_BOMB = 5;
-    // private const int WIND_BOMB = 6;
+
+    // ITEMS
+    private const int PHYSICAL_DAMAGE = 0;
+    private const int WATER_DAMAGE = 1;
+    private const int FIRE_DAMAGE = 2;
+    private const int EARTH_DAMAGE = 3;
+    private const int WIND_DAMAGE = 4;
+    private const int HEAL = 5;
+    private const int NUM_OF_ITEMS = 6;
 
 	void Start () {
         hp_current = hp_max;
         mp_current = mp_max;
 
+        // Getting the inventory
+        if (leftTeam)
+            inventory = GameObject.Find("LeftTeam").GetComponent<Item>();
+        else
+            inventory = GameObject.Find("RightTeam").GetComponent<Item>();
+
         displayGui = characterInfo.GetComponent<EditGui>();
 
         if (this.characterName == "Tomato B") {
-            MyTurn(targets[0], USING_SKILL, WEAK_SKILL);
+            MyTurn(targets[0], USING_ITEM, EARTH_DAMAGE);
         }
 
         spriteRenderer = this.GetComponent<SpriteRenderer>();
@@ -238,7 +249,8 @@ public class Character : MonoBehaviour {
     }
 
     private void UseItem() {
-
+        // Using the item on the target
+        inventory.UseItem(subCommand, turnTarget, this.gameObject);
     }
 
     // CALLED FROM ATTACKER
@@ -271,38 +283,11 @@ public class Character : MonoBehaviour {
         }
         if (subCommand != HEALING_SKILL) {
             // Checking advantage or disvantages
-            switch (element) {
-                case 0: // Physical damage
-                    if (physicalResist == 0) // weak
-                        magicValue *= 2;
-                    else if (physicalResist == 2) // strong
-                        magicValue /= 2;
-                    break;
-                case 1: // Water damage
-                    if (waterResist == 0) // weak
-                        magicValue *= 2;
-                    else if (waterResist == 2) // strong
-                        magicValue /= 2;
-                    break;
-                case 2: // Fire damage
-                    if (fireResist == 0) // weak
-                        magicValue *= 2;
-                    else if (fireResist == 2) // strong
-                        magicValue /= 2;
-                    break;
-                case 3: // Earth damage
-                    if (earthResist == 0) // weak
-                        magicValue *= 2;
-                    else if (earthResist == 2) // strong
-                        magicValue /= 2;
-                    break;
-                case 4: // Wind damage
-                    if (windResist == 0) // weak
-                        magicValue *= 2;
-                    else if (windResist == 2) // strong
-                        magicValue /= 2;
-                    break;
-            }
+            if (elementResist[element] == 0)
+                magicValue *= 2;
+            else if (elementResist[element] == 2)
+                magicValue /= 2;
+
             // Damage calculation
             int damage = (magicValue - this.resistance) > 0 ? (magicValue - this.resistance) : 0;
             hp_current -= damage;
@@ -328,6 +313,43 @@ public class Character : MonoBehaviour {
             // Printing on Console
             consoleInfo.GetComponent<EditGui>().AddText(this.source.GetComponent<Character>().characterName +
                 " used skill on " + this.characterName + ". Healed: " + healValue + System.Environment.NewLine);
+        }
+    }
+
+    public void TakingItem(int itemType, int itemStrength, System.String itemName, GameObject source) {
+        // Attacker
+        this.source = source;
+
+        if (itemType != HEAL) {
+            // Checking advantage or disvantages
+            if (elementResist[itemType] == 0)
+                itemStrength *= 2;
+            else if (elementResist[itemType] == 2)
+                itemStrength /= 2;
+
+            // Damage calculation
+            int damage = itemStrength;
+            hp_current -= damage;
+
+            // Damage animation
+            damageAnimationTimeout = 1.0f;
+            damageAnimation = true;
+
+            // Printing on Console
+            consoleInfo.GetComponent<EditGui>().AddText(this.source.GetComponent<Character>().characterName +
+                " used " + itemName + " on " + this.characterName + ". Damage: " + damage + System.Environment.NewLine);
+        }
+        else { // Healing item
+            int healValue = itemStrength;
+            hp_current += healValue;
+
+            // Healing animation
+            damageAnimationTimeout = 1.0f;
+            healingAnimation = true;
+
+            // Printing on Console
+            consoleInfo.GetComponent<EditGui>().AddText(this.source.GetComponent<Character>().characterName +
+                " used " + itemName + " on " + this.characterName + ". Heal: " + healValue + System.Environment.NewLine);
         }
     }
 
