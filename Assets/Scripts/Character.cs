@@ -220,7 +220,7 @@ public class Character : MonoBehaviour {
             moving = true;
         }
         else { // is defending
-            consoleInfo.GetComponent<EditGui>().AddText(this.characterName + " is defending.");
+            consoleInfo.GetComponent<Console>().AddMessage(this.characterName + " is defending.");
             //print(this.characterName + " is defending.");
             // call next!!
         }
@@ -279,8 +279,8 @@ public class Character : MonoBehaviour {
         damageAnimation = true;
 
         // Printing on Console
-        consoleInfo.GetComponent<EditGui>().AddText(this.source.GetComponent<Character>().characterName +
-            " attacked " + this.characterName + ". Damage: " + damage + System.Environment.NewLine);
+        consoleInfo.GetComponent<Console>().AddMessage(this.source.GetComponent<Character>().characterName +
+            " attacked " + this.characterName + ". Damage: " + damage);
 
         //print(this.gameObject + " taking damage");
         //print(this.source + " was attacker");
@@ -313,8 +313,8 @@ public class Character : MonoBehaviour {
             damageAnimation = true;
 
             // Printing on Console
-            consoleInfo.GetComponent<EditGui>().AddText(this.source.GetComponent<Character>().characterName +
-                " used skill on " + this.characterName + ". Damage: " + damage + System.Environment.NewLine);
+            consoleInfo.GetComponent<Console>().AddMessage(this.source.GetComponent<Character>().characterName +
+                " used skill on " + this.characterName + ". Damage: " + damage);
         }
         else { // Healing skill
             int healValue = magicValue / 2;
@@ -327,8 +327,8 @@ public class Character : MonoBehaviour {
             healingAnimation = true;
 
             // Printing on Console
-            consoleInfo.GetComponent<EditGui>().AddText(this.source.GetComponent<Character>().characterName +
-                " used skill on " + this.characterName + ". Healed: " + healValue + System.Environment.NewLine);
+            consoleInfo.GetComponent<Console>().AddMessage(this.source.GetComponent<Character>().characterName +
+                " used skill on " + this.characterName + ". Healed: " + healValue);
         }
     }
 
@@ -352,8 +352,8 @@ public class Character : MonoBehaviour {
             damageAnimation = true;
 
             // Printing on Console
-            consoleInfo.GetComponent<EditGui>().AddText(this.source.GetComponent<Character>().characterName +
-                " used " + itemName + " on " + this.characterName + ". Damage: " + damage + System.Environment.NewLine);
+            consoleInfo.GetComponent<Console>().AddMessage(this.source.GetComponent<Character>().characterName +
+                " used " + itemName + " on " + this.characterName + ". Damage: " + damage);
         }
         else { // Healing item
             int healValue = itemStrength;
@@ -364,8 +364,8 @@ public class Character : MonoBehaviour {
             healingAnimation = true;
 
             // Printing on Console
-            consoleInfo.GetComponent<EditGui>().AddText(this.source.GetComponent<Character>().characterName +
-                " used " + itemName + " on " + this.characterName + ". Heal: " + healValue + System.Environment.NewLine);
+            consoleInfo.GetComponent<Console>().AddMessage(this.source.GetComponent<Character>().characterName +
+                " used " + itemName + " on " + this.characterName + ". Heal: " + healValue);
         }
     }
 

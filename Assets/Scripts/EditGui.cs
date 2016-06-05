@@ -15,7 +15,4 @@ public class EditGui : MonoBehaviour {
         display.text = newText;
     }
 
-    public void AddText(string text) {
-        display.text += text;
-    }
 }
