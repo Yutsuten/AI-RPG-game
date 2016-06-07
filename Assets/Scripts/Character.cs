@@ -39,6 +39,9 @@ public class Character : MonoBehaviour {
     private int command = 0; // See commands on const values
     private int subCommand = 0; // May be a skill or item ID
 
+    // Use for turns determination variable
+    private int turnTiming = 0;
+
     // Auxiliable variables
     private SpriteRenderer spriteRenderer;
     private bool[] finishedAnimation = new bool[2]; // 0 is self, 1 is target
@@ -89,9 +92,9 @@ public class Character : MonoBehaviour {
 
         displayGui = characterInfo.GetComponent<EditGui>();
 
-        if (this.characterName == "Tomato B") {
+        /*if (this.characterName == "Tomato B") {
             MyTurn(targets[0], USING_ITEM, EARTH_DAMAGE);
-        }
+        }*/
 
         spriteRenderer = this.GetComponent<SpriteRenderer>();
 
@@ -204,9 +207,20 @@ public class Character : MonoBehaviour {
 
     }
 
+    /// <summary>
+    /// Update turn variable.
+    /// </summary>
+    /// <returns>If may have a turn now</returns>
+    public int UpdateTurn() {
+        return turnTiming += speed + Random.Range(0, 10); // speed plus random 0~9
+    }
+
     public void MyTurn(GameObject target, int command, int subCommand) {
         finishedAnimation[0] = false;
         finishedAnimation[1] = false;
+
+        turnTiming -= 1000;
+        print(this.characterName + " got turn. Turn value was " + (turnTiming + 1000) + ", now is " + turnTiming + ".");
 
         // Memorizing the target, the damage will be dealt on update()
         turnTarget = target;
