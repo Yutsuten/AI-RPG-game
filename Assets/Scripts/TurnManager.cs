@@ -4,6 +4,28 @@ using System.Collections.Generic;
 
 public class TurnManager : MonoBehaviour {
 
+    // Commands
+    private const int NO_COMMAND = 0;
+    private const int DEFENDING = 1;
+    private const int ATTACKING = 2;
+    private const int USING_SKILL = 3;
+    private const int USING_ITEM = 4;
+
+    // SKILLS
+    private const int SIMPLE_COMMAND = 0;
+    private const int WEAK_SKILL = 1;
+    private const int STRONG_SKILL = 2;
+    private const int HEALING_SKILL = 3;
+
+    // ITEMS
+    private const int PHYSICAL_DAMAGE = 0;
+    private const int WATER_DAMAGE = 1;
+    private const int FIRE_DAMAGE = 2;
+    private const int EARTH_DAMAGE = 3;
+    private const int WIND_DAMAGE = 4;
+    private const int HEAL = 5;
+    private const int NUM_OF_ITEMS = 6;
+
     // leftGroupNeuralNetwork
     //public GameObject[] leftGroup = new GameObject[3];
 
@@ -37,27 +59,42 @@ public class TurnManager : MonoBehaviour {
         Invoke("SearchNext", 1);
 	}
 
-    void SearchNext() {
-        print("Beggining of my turn manager!");
+    //int count = -1;
 
-        // Running one time the UpdateTurn of the characters
-        for (int i = 0; i < membersData.Count; i++) {
-            membersData[i].turnData = membersData[i].member.UpdateTurn();
-        }
+    public void SearchNext() {
+        //count++;
 
-        // Checking the list unsorted
-        print("List unsorted:");
-        for (int i = 0; i < membersData.Count; i++) {
-            print(membersData[i].member.characterName + " turnTiming is: " + membersData[i].turnData);
-        }
+        while (membersData[0].turnData < 1000) { // Checking until someone has turnTiming enough
 
-        // Sorting according to turnTiming
+            // Running one time the UpdateTurn of the characters
+            for (int i = 0; i < membersData.Count; i++) {
+                membersData[i].turnData = membersData[i].member.UpdateTurn();
+            }
+
+            // Sorting according to turnTiming
+            membersData.Sort((s1, s2) => s2.turnData.CompareTo(s1.turnData));
+
+        };
+
+        membersData[0].member.MyTurn(membersData[0].member.targets[Random.Range(0, 3)], ATTACKING, SIMPLE_COMMAND);
+
+        // Updating that received a turn
+        membersData[0].turnData -= 1000;
+        // Reordering
         membersData.Sort((s1, s2) => s2.turnData.CompareTo(s1.turnData));
 
-        // Checking the list sorted
-        print("List sorted:");
+        //print("Finished Search next! Count value: " + count);
+
+        // Checking the list unsorted
+        /*print("List unsorted:");
         for (int i = 0; i < membersData.Count; i++) {
             print(membersData[i].member.characterName + " turnTiming is: " + membersData[i].turnData);
-        }
+        }*/
+
+        // Checking the list sorted
+        /*print("List sorted:");
+        for (int i = 0; i < membersData.Count; i++) {
+            print(membersData[i].member.characterName + " turnTiming is: " + membersData[i].turnData);
+        }*/
     }
 }

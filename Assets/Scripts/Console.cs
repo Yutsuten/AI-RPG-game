@@ -25,7 +25,8 @@ public class Console : MonoBehaviour {
 
         System.String logText = log[0] + System.Environment.NewLine +
             log[1] + System.Environment.NewLine +
-            log[2] + System.Environment.NewLine;
+            log[2] + System.Environment.NewLine +
+            log[3] + System.Environment.NewLine;
         consoleGui.ChangeText(logText);
     }
 

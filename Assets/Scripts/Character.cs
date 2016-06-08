@@ -14,6 +14,9 @@ public class Character : MonoBehaviour {
     private EditGui displayGui;
     private System.String diplayInfo;
 
+    // TurnManager
+    private TurnManager turnManager;
+
     // Stats
     public int hp_max = 300, mp_max = 100,
         attack = 100, defense = 50, magicPower = 100,
@@ -100,6 +103,9 @@ public class Character : MonoBehaviour {
 
         // Taking the console
         consoleInfo = GameObject.Find("Canvas/Console");
+
+        // Taking the TurnManager script
+        turnManager = GameObject.Find("Main Camera").GetComponent<TurnManager>();
 	}
 
     void Update() {
@@ -197,7 +203,8 @@ public class Character : MonoBehaviour {
                         finishedAnimation[0] = true;
 
                         if (finishedAnimation[0] && finishedAnimation[1]) {
-                            print("Both animations finished");
+                            //print("Both animations finished");
+                            FinishedTurn();
                         }
                     }
                     break;
@@ -220,7 +227,7 @@ public class Character : MonoBehaviour {
         finishedAnimation[1] = false;
 
         turnTiming -= 1000;
-        print(this.characterName + " got turn. Turn value was " + (turnTiming + 1000) + ", now is " + turnTiming + ".");
+        //print(this.characterName + " got turn. Turn value was " + (turnTiming + 1000) + ", now is " + turnTiming + ".");
 
         // Memorizing the target, the damage will be dealt on update()
         turnTarget = target;
@@ -236,8 +243,12 @@ public class Character : MonoBehaviour {
         else { // is defending
             consoleInfo.GetComponent<Console>().AddMessage(this.characterName + " is defending.");
             //print(this.characterName + " is defending.");
-            // call next!!
+            FinishedTurn();
         }
+    }
+
+    private void FinishedTurn() {
+        turnManager.SearchNext();
     }
 
     private void Attack() {
@@ -387,7 +398,8 @@ public class Character : MonoBehaviour {
         finishedAnimation[1] = true;
 
         if (finishedAnimation[0] && finishedAnimation[1]) {
-            print("Both animations finished");
+            //print("Both animations finished");
+            
         }
     }
 }
