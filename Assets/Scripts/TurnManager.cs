@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class TurnManager : MonoBehaviour {
+    // Local variables
+    private bool successfullCommand;
 
     // Commands
     private const int NO_COMMAND = 0;
@@ -64,7 +66,7 @@ public class TurnManager : MonoBehaviour {
     public void SearchNext() {
         //count++;
 
-        while (membersData[0].turnData < 1000) { // Checking until someone has turnTiming enough
+        while (membersData[0].turnData < 1000) { // Checking until someone have enough turnTiming
 
             // Running one time the UpdateTurn of the characters
             for (int i = 0; i < membersData.Count; i++) {
@@ -76,7 +78,12 @@ public class TurnManager : MonoBehaviour {
 
         };
 
-        membersData[0].member.MyTurn(membersData[0].member.targets[Random.Range(0, 3)], ATTACKING, SIMPLE_COMMAND);
+        successfullCommand = false;
+
+        do {
+            successfullCommand = membersData[0].member.MyTurn(membersData[0].member.targets[Random.Range(0, 3)], Random.Range(2, 5), 1);
+        } while (!successfullCommand);
+        
 
         // Updating that received a turn
         membersData[0].turnData -= 1000;

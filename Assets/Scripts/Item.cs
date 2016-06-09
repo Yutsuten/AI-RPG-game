@@ -50,4 +50,8 @@ public class Item : MonoBehaviour {
         inventory[itemId].quantity--;
         target.GetComponent<Character>().TakingItem(inventory[itemId].type, inventory[itemId].power, inventory[itemId].name, source);
     }
+
+    public int ItemQuantity(int itemId) {
+        return inventory[itemId].quantity;
+    }
 }

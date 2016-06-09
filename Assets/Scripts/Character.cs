@@ -63,12 +63,14 @@ public class Character : MonoBehaviour {
     private const float MOVE_SPEED = 2f;
     private const float DAMAGE_ANIMATION_SPEED = 1.2f;
 
+    // Commands
     private const int NO_COMMAND = 0;
     private const int DEFENDING = 1;
     private const int ATTACKING = 2;
     private const int USING_SKILL = 3;
     private const int USING_ITEM = 4;
 
+    // SKILLS
     private const int SIMPLE_COMMAND = 0;
     private const int WEAK_SKILL = 1;
     private const int STRONG_SKILL = 2;
@@ -82,6 +84,12 @@ public class Character : MonoBehaviour {
     private const int WIND_DAMAGE = 4;
     private const int HEAL = 5;
     private const int NUM_OF_ITEMS = 6;
+
+    // SKILLS MP CONSUMPTION
+    private const int MP_SIMPLE_COMMAND = 0;
+    private const int MP_WEAK_SKILL = 50;
+    private const int MP_STRONG_SKILL = 110;
+    private const int MP_HEALING_SKILL = 80;
 
 	void Start () {
         hp_current = hp_max;
@@ -222,7 +230,37 @@ public class Character : MonoBehaviour {
         return turnTiming += speed + Random.Range(0, 10); // speed plus random 0~9
     }
 
-    public void MyTurn(GameObject target, int command, int subCommand) {
+    public bool MyTurn(GameObject target, int command, int subCommand) {
+        // Verify if have enough MP
+        if (command == USING_SKILL) {
+            switch (subCommand) {
+                case WEAK_SKILL:
+                    if (mp_current < MP_WEAK_SKILL) {
+                        print("Dont have enough mana for WEAK SKILL");
+                        return false;
+                    }
+                    break;
+                case STRONG_SKILL:
+                    if (mp_current < MP_STRONG_SKILL) {
+                        print("Dont have enough mana for STRONG SKILL");
+                        return false;
+                    }
+                    break;
+                case HEALING_SKILL:
+                    if (mp_current < MP_HEALING_SKILL) {
+                        print("Dont have enough mana for HEALING SKILL");
+                        return false;
+                    }
+                    break;
+            }
+        } // Verify if have enough items
+        else if (command == USING_ITEM) {
+            if (inventory.ItemQuantity(subCommand) == 0) {
+                print("Dont have enough ITEMs");
+                return false;
+            }
+        }
+
         finishedAnimation[0] = false;
         finishedAnimation[1] = false;
 
@@ -245,6 +283,7 @@ public class Character : MonoBehaviour {
             //print(this.characterName + " is defending.");
             FinishedTurn();
         }
+        return true;
     }
 
     private void FinishedTurn() {
@@ -270,13 +309,13 @@ public class Character : MonoBehaviour {
         
         // Removing MP
         if (subCommand == WEAK_SKILL) {
-            this.mp_current -= 50;
+            this.mp_current -= MP_WEAK_SKILL;
         }
         else if (subCommand == STRONG_SKILL) {
-            this.mp_current -= 110;
+            this.mp_current -= MP_STRONG_SKILL;
         }
         else if (subCommand == HEALING_SKILL) {
-            this.mp_current -= 80;
+            this.mp_current -= MP_HEALING_SKILL;
         }
     }
 
@@ -399,7 +438,7 @@ public class Character : MonoBehaviour {
 
         if (finishedAnimation[0] && finishedAnimation[1]) {
             //print("Both animations finished");
-            
+            FinishedTurn();
         }
     }
 }
