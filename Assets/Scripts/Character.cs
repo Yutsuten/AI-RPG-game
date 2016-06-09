@@ -255,6 +255,14 @@ public class Character : MonoBehaviour {
         return fighting;
     }
 
+    public float HpLost() {
+        return hp_max - hp_current;
+    }
+
+    public float MpLost() {
+        return mp_max - mp_current;
+    }
+
     public bool MyTurn(GameObject target, int command, int subCommand) {
         // Verify if have enough MP
         if (command == USING_SKILL) {
@@ -347,6 +355,10 @@ public class Character : MonoBehaviour {
     private void UseItem() {
         // Using the item on the target
         inventory.UseItem(subCommand, turnTarget, this.gameObject);
+    }
+
+    public bool ItemAvailable(int itemId) {
+        return (inventory.ItemQuantity(itemId) > 0);
     }
 
     // CALLED FROM ATTACKER
