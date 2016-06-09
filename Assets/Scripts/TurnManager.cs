@@ -70,7 +70,8 @@ public class TurnManager : MonoBehaviour {
 
             // Running one time the UpdateTurn of the characters
             for (int i = 0; i < membersData.Count; i++) {
-                membersData[i].turnData = membersData[i].member.UpdateTurn();
+                if (membersData[i].member.OnGame()) // Only get turns if is alive
+                    membersData[i].turnData = membersData[i].member.UpdateTurn();
             }
 
             // Sorting according to turnTiming
@@ -78,10 +79,26 @@ public class TurnManager : MonoBehaviour {
 
         };
 
+        // Checking if there is a valid target
+        if (!membersData[0].member.targets[0].GetComponent<Character>().OnGame() &&
+            !membersData[0].member.targets[1].GetComponent<Character>().OnGame() &&
+            !membersData[0].member.targets[2].GetComponent<Character>().OnGame()) {
+            // If entered here, there is a winner
+                if (membersData[0].member.leftTeam)
+                    print("Left team wins!");
+                else
+                    print("Right team wins!");
+                return;
+        }
+
         successfullCommand = false;
 
         do {
-            successfullCommand = membersData[0].member.MyTurn(membersData[0].member.targets[Random.Range(0, 3)], Random.Range(2, 5), 1);
+            int target;
+            do {
+                target = Random.Range(0, 3);
+            } while (!membersData[0].member.targets[target].GetComponent<Character>().OnGame()); // Only become a target if the target is still fighting
+            successfullCommand = membersData[0].member.MyTurn(membersData[0].member.targets[target], Random.Range(2, 5), 1);
         } while (!successfullCommand);
         
 

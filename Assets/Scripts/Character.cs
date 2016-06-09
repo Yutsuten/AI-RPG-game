@@ -44,6 +44,7 @@ public class Character : MonoBehaviour {
 
     // Use for turns determination variable
     private int turnTiming = 0;
+    private bool fighting = true;
 
     // Auxiliable variables
     private SpriteRenderer spriteRenderer;
@@ -51,6 +52,7 @@ public class Character : MonoBehaviour {
     private float damageAnimationTimeout = 0.0f;
     private bool damageAnimation = false;
     private bool healingAnimation = false;
+    private bool unconsciousAnimation = false;
 
     private int state = 3; // 0: Move ahead - 1: wait - 2: move back - 3: do nothing
     private bool moving = false;
@@ -122,20 +124,38 @@ public class Character : MonoBehaviour {
             "MP ", mp_current, "/", mp_max);
         displayGui.ChangeText(diplayInfo);
 
-        // Damage animation
+        #region DAMAGE_ANIMATION
         if (damageAnimation) {
             damageAnimationTimeout -= Time.deltaTime * DAMAGE_ANIMATION_SPEED;
             if (damageAnimationTimeout <= 0) {
                 damageAnimationTimeout = 0;
                 damageAnimation = false;
-                this.source.GetComponent<Character>().TakeDamageAnimationFinished();
+                if (!unconsciousAnimation) // if there is no more animation to run
+                    this.source.GetComponent<Character>().TakeDamageAnimationFinished();
+
+                if (unconsciousAnimation) {
+                    damageAnimationTimeout = 1.0f; // Reset for the next animation (unconscious)
+                }
             }
             //print("Damage animation timeout: " + damageAnimationTimeout);
             //print(spriteRenderer.color);
             spriteRenderer.color = new Color(1, 1 - (damageAnimationTimeout), 1 - (damageAnimationTimeout), 1);
         }
+        #endregion
 
-        // Healing animation
+        #region UNCONSCIOUS_ANIMATION
+        if (unconsciousAnimation && !damageAnimation) {
+            damageAnimationTimeout -= Time.deltaTime * DAMAGE_ANIMATION_SPEED;
+            if (damageAnimationTimeout <= 0) {
+                damageAnimationTimeout = 0;
+                unconsciousAnimation = false;
+                this.source.GetComponent<Character>().TakeDamageAnimationFinished();
+            }
+            spriteRenderer.color = new Color(1, 1, 1, damageAnimationTimeout);
+        }
+        #endregion
+
+        #region HEALING_ANIMATION
         if (healingAnimation) {
             damageAnimationTimeout -= Time.deltaTime * DAMAGE_ANIMATION_SPEED;
             if (damageAnimationTimeout <= 0) {
@@ -145,6 +165,7 @@ public class Character : MonoBehaviour {
             }
             spriteRenderer.color = new Color(1 - (damageAnimationTimeout), 1, 1 - (damageAnimationTimeout), 1);
         }
+        #endregion
 
         if (state < 3) { // If must do something
 
@@ -230,25 +251,29 @@ public class Character : MonoBehaviour {
         return turnTiming += speed + Random.Range(0, 10); // speed plus random 0~9
     }
 
+    public bool OnGame() {
+        return fighting;
+    }
+
     public bool MyTurn(GameObject target, int command, int subCommand) {
         // Verify if have enough MP
         if (command == USING_SKILL) {
             switch (subCommand) {
                 case WEAK_SKILL:
                     if (mp_current < MP_WEAK_SKILL) {
-                        print("Dont have enough mana for WEAK SKILL");
+                        //print("Dont have enough mana for WEAK SKILL");
                         return false;
                     }
                     break;
                 case STRONG_SKILL:
                     if (mp_current < MP_STRONG_SKILL) {
-                        print("Dont have enough mana for STRONG SKILL");
+                        //print("Dont have enough mana for STRONG SKILL");
                         return false;
                     }
                     break;
                 case HEALING_SKILL:
                     if (mp_current < MP_HEALING_SKILL) {
-                        print("Dont have enough mana for HEALING SKILL");
+                        //print("Dont have enough mana for HEALING SKILL");
                         return false;
                     }
                     break;
@@ -256,7 +281,7 @@ public class Character : MonoBehaviour {
         } // Verify if have enough items
         else if (command == USING_ITEM) {
             if (inventory.ItemQuantity(subCommand) == 0) {
-                print("Dont have enough ITEMs");
+                //print("Dont have enough ITEMs");
                 return false;
             }
         }
@@ -342,6 +367,13 @@ public class Character : MonoBehaviour {
         damageAnimationTimeout = 1.0f;
         damageAnimation = true;
 
+        // Validation if still have HP
+        if (hp_current <= 0) {
+            hp_current = 0;
+            unconsciousAnimation = true;
+            fighting = false;
+        }
+
         // Printing on Console
         consoleInfo.GetComponent<Console>().AddMessage(this.source.GetComponent<Character>().characterName +
             " attacked " + this.characterName + ". Damage: " + damage);
@@ -375,6 +407,13 @@ public class Character : MonoBehaviour {
             // Damage animation
             damageAnimationTimeout = 1.0f;
             damageAnimation = true;
+
+            // Validation if still have HP
+            if (hp_current <= 0) {
+                hp_current = 0;
+                unconsciousAnimation = true;
+                fighting = false;
+            }
 
             // Printing on Console
             consoleInfo.GetComponent<Console>().AddMessage(this.source.GetComponent<Character>().characterName +
@@ -414,6 +453,13 @@ public class Character : MonoBehaviour {
             // Damage animation
             damageAnimationTimeout = 1.0f;
             damageAnimation = true;
+
+            // Validation if still have HP
+            if (hp_current <= 0) {
+                hp_current = 0;
+                unconsciousAnimation = true;
+                fighting = false;
+            }
 
             // Printing on Console
             consoleInfo.GetComponent<Console>().AddMessage(this.source.GetComponent<Character>().characterName +
