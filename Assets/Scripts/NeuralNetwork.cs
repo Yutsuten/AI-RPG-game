@@ -5,7 +5,7 @@ public class NeuralNetwork : MonoBehaviour {
 
     // Constant values
     private const int NUMBER_INPUTS = 33;
-    private const int NUMBER_OUTPUTS = 11;
+    private const int NUMBER_OUTPUTS = 12;
 
     // Neural Network variables
     private double[] input = new double[NUMBER_INPUTS];

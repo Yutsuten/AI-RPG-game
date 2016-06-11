@@ -20,21 +20,22 @@ public class Item : MonoBehaviour {
     private ItemInfo[] inventory;
 
     // CONST VALUES
-    private const int PHYSICAL_DAMAGE = 0;
-    private const int WATER_DAMAGE = 1;
-    private const int FIRE_DAMAGE = 2;
-    private const int EARTH_DAMAGE = 3;
-    private const int WIND_DAMAGE = 4;
-    private const int HEAL = 5;
+    private const int PHYSICAL_DAMAGE = 1;
+    private const int WATER_DAMAGE = 2;
+    private const int FIRE_DAMAGE = 3;
+    private const int EARTH_DAMAGE = 4;
+    private const int WIND_DAMAGE = 5;
+    private const int HEAL = 6;
+    private const int NUM_OF_ITEMS = 6;
 
 	void Start () {
         // Creating the inventory
-        inventory = new ItemInfo[6];
+        inventory = new ItemInfo[NUM_OF_ITEMS];
 
         // Creating the items on inventory
         for (int i = 0; i < inventory.Length; i++) {
             inventory[i].quantity = 1;
-            inventory[i].type = i;
+            inventory[i].type = i + 1;
             inventory[i].power = 40;
         }
 
@@ -47,11 +48,11 @@ public class Item : MonoBehaviour {
 	}
 
     public void UseItem(int itemId, GameObject target, GameObject source) {
-        inventory[itemId].quantity--;
+        inventory[--itemId].quantity--;
         target.GetComponent<Character>().TakingItem(inventory[itemId].type, inventory[itemId].power, inventory[itemId].name, source);
     }
 
     public int ItemQuantity(int itemId) {
-        return inventory[itemId].quantity;
+        return inventory[--itemId].quantity;
     }
 }

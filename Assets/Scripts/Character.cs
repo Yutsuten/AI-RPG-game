@@ -67,8 +67,8 @@ public class Character : MonoBehaviour {
 
     // Commands
     private const int NO_COMMAND = 0;
-    private const int DEFENDING = 1;
-    private const int ATTACKING = 2;
+    private const int ATTACKING = 1;
+    private const int DEFENDING = 2;
     private const int USING_SKILL = 3;
     private const int USING_ITEM = 4;
 
@@ -79,12 +79,12 @@ public class Character : MonoBehaviour {
     private const int HEALING_SKILL = 3;
 
     // ITEMS
-    private const int PHYSICAL_DAMAGE = 0;
-    private const int WATER_DAMAGE = 1;
-    private const int FIRE_DAMAGE = 2;
-    private const int EARTH_DAMAGE = 3;
-    private const int WIND_DAMAGE = 4;
-    private const int HEAL = 5;
+    private const int PHYSICAL_DAMAGE = 1;
+    private const int WATER_DAMAGE = 2;
+    private const int FIRE_DAMAGE = 3;
+    private const int EARTH_DAMAGE = 4;
+    private const int WIND_DAMAGE = 5;
+    private const int HEAL = 6;
     private const int NUM_OF_ITEMS = 6;
 
     // SKILLS MP CONSUMPTION
@@ -314,7 +314,7 @@ public class Character : MonoBehaviour {
         else { // is defending
             consoleInfo.GetComponent<Console>().AddMessage(this.characterName + " is defending.");
             //print(this.characterName + " is defending.");
-            FinishedTurn();
+            Invoke("FinishedTurn", 0.3f);
         }
         return true;
     }
@@ -453,9 +453,9 @@ public class Character : MonoBehaviour {
 
         if (itemType != HEAL) {
             // Checking advantage or disvantages
-            if (elementResist[itemType] == 0)
+            if (elementResist[itemType - 1] == 0)
                 itemStrength *= 2;
-            else if (elementResist[itemType] == 2)
+            else if (elementResist[itemType - 1] == 2)
                 itemStrength /= 2;
 
             // Damage calculation
