@@ -27,7 +27,7 @@ public class NeuralNetwork : MonoBehaviour {
         }
         catch (System.Exception e) {
             // Fail
-            System.Console.Out.WriteLine("Failed to set the Weigth Matrix. Error: " + e.Message);
+            print("Failed to set the Weigth Matrix. Error: " + e.Message);
             return false;
         }
     }
@@ -68,7 +68,7 @@ public class NeuralNetwork : MonoBehaviour {
             return true;
         }
         catch (System.Exception e) {
-            System.Console.Out.WriteLine("Failed to set the input array. Error: ", e.Message);
+            print("Failed to set the input array. Error: " + e.Message);
             return false;
         }
     }
@@ -92,7 +92,7 @@ public class NeuralNetwork : MonoBehaviour {
             return output;
         }
         catch (System.Exception e) {
-            System.Console.Out.WriteLine("Failed to run the Neural Network. Error: ", e.Message);
+            print("Failed to run the Neural Network. Error: " + e.Message);
             return new double[NUMBER_OUTPUTS];
         }
     }

@@ -61,12 +61,12 @@ public class GeneticAlgorithm : MonoBehaviour {
 
             }
             else { // File don't exist
-                System.Console.Out.WriteLine("File don't exist. Must create.");
+                print("File don't exist. Must create.");
                 return false;
             }
         }
         catch(System.Exception e) {
-            System.Console.Out.WriteLine("Exception when reading population. Error: " + e.Message);
+            print("Exception when reading population. Error: " + e.Message);
             return false;
         }
     }
@@ -89,7 +89,7 @@ public class GeneticAlgorithm : MonoBehaviour {
             return true; // Success
         }
         catch (System.Exception e) {
-            System.Console.Out.WriteLine("WARNING: Failed to save the population data on disk. Error: " + e.Message);
+            print("WARNING: Failed to save the population data on disk. Error: " + e.Message);
             return false;
         }
     }
@@ -120,7 +120,7 @@ public class GeneticAlgorithm : MonoBehaviour {
             return true; // Success
         }
         catch (System.Exception e) {
-            System.Console.Out.WriteLine("Failed to create the population. Error: " + e.Message);
+            print("Failed to create the population. Error: " + e.Message);
             return false;
         }
         
