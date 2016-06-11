@@ -93,7 +93,7 @@ public class Character : MonoBehaviour {
     private const int MP_STRONG_SKILL = 110;
     private const int MP_HEALING_SKILL = 80;
 
-	void Start () {
+	void Start() {
         hp_current = hp_max;
         mp_current = mp_max;
 

@@ -98,7 +98,7 @@ public class TurnManager : MonoBehaviour {
     // Variable for the results of the NN
     private List<TargetCommandResult> targetCommandResult = new List<TargetCommandResult>();
 
-	void Start () {
+	void Start() {
         // Getting and settings the characters info
         for (int i = 0; i < NUMBER_OF_CHARACTERS; i++) {
             // Getting the character script
