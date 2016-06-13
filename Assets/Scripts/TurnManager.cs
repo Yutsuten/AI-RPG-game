@@ -33,18 +33,6 @@ public class TurnManager : MonoBehaviour {
     private const int HEAL = 6;
     private const int NUM_OF_ITEMS = 6;
 
-    // Command structure - the index of the command and its probability got on the NN
-    /*class CommandResult {
-        public static readonly int[] COMMAND_CODE = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-        public double[] commandProbability = { ZERO_PROBABILITY, ZERO_PROBABILITY, ZERO_PROBABILITY, ZERO_PROBABILITY, ZERO_PROBABILITY, ZERO_PROBABILITY, ZERO_PROBABILITY, ZERO_PROBABILITY, ZERO_PROBABILITY, ZERO_PROBABILITY };
-    }*/
-
-    // Target result from NN - probability to become a target and the list of commands
-    /*class TargetResult {
-        public double targetProbability = ZERO_PROBABILITY;
-        public CommandResult commandResult = new CommandResult();
-    }*/
-
     class TargetCommandResult {
         public int target;
         public int command;
@@ -83,14 +71,20 @@ public class TurnManager : MonoBehaviour {
     // Local variables
     private bool successfullCommand;
     private double[] neuralNetworkOutput = new double[NUMBER_OUTPUTS];
-    int indexBiggestProbability;
+    private int indexBiggestProbability;
 
     // Members objects (set on Unity Editor)
     public GameObject[] members = new GameObject[NUMBER_OF_CHARACTERS];
     private Character[] character = new Character[NUMBER_OF_CHARACTERS];
 
+    // Scripts
+    private Item leftTeamInventory;
+    private Item righTeamInventory;
+
     // Neural Network Component
     private NeuralNetwork neuralNetwork;
+    private NeuralNetwork leftTeamNeuralNetwork;
+    private NeuralNetwork rightTeamNeuralNetwork;
 
     // Creating the list of members with the turnTiming information
     private List<MembersManager> membersData = new List<MembersManager>();
@@ -109,11 +103,34 @@ public class TurnManager : MonoBehaviour {
         }
 
         // Getting the Neural Network script
-        neuralNetwork = this.GetComponent<NeuralNetwork>();
+        GameObject teamObject = GameObject.Find("LeftTeam");
+        leftTeamNeuralNetwork = teamObject.GetComponent<NeuralNetwork>();
+        leftTeamInventory = teamObject.GetComponent<Item>();
 
-        // Begin after 1 second
-        Invoke("SearchNext", 1);
+        teamObject = GameObject.Find("RightTeam");
+        rightTeamNeuralNetwork = teamObject.GetComponent<NeuralNetwork>();
+        righTeamInventory = teamObject.GetComponent<Item>();
 	}
+
+    public void ResetGame() {
+        for (int i = 0; i < NUMBER_OF_CHARACTERS; i++) {
+            membersData[i].turnData = 0;
+            membersData[i].member.ResetStatus();
+        }
+        leftTeamInventory.ResetItems();
+        righTeamInventory.ResetItems();
+    }
+
+    public void BeginGame() {
+        Invoke("SearchNext", 0.3f);
+    }
+
+    public void SetNeuralNetworkWeights(double[,] leftTeamNN_Weights, double[,] rightTeamNN_Weights) {
+        
+        // Setting weights for both teams
+        leftTeamNeuralNetwork.SetWeightMatrix(leftTeamNN_Weights);
+        rightTeamNeuralNetwork.SetWeightMatrix(rightTeamNN_Weights);
+    }
 
     public void SearchNext() {
         while (membersData[0].turnData < 1000) { // Checking until someone have enough turnTiming
@@ -134,10 +151,12 @@ public class TurnManager : MonoBehaviour {
             !membersData[0].member.targets[1].GetComponent<Character>().OnGame() &&
             !membersData[0].member.targets[2].GetComponent<Character>().OnGame()) {
             // If entered here, there is a winner
-                if (membersData[0].member.leftTeam)
+                if (membersData[0].member.leftTeam) {
                     print("Left team wins!");
-                else
+                }
+                else {
                     print("Right team wins!");
+                }
                 return;
         }
 
@@ -145,7 +164,10 @@ public class TurnManager : MonoBehaviour {
 
         //print(membersData[0].member.characterName + " will try the Neural Network.");
         // Setting the weights of the Neural Network with the character's team
-        /* Set NN weights here */
+        neuralNetwork = membersData[0].member.leftTeam ? leftTeamNeuralNetwork : rightTeamNeuralNetwork;
+
+        // Reseting the structure that can sort the values of the output
+        targetCommandResult.Clear();
 
         // Running the Neural Network and get the data about what to do
         for (int i = 0; i < NUMBER_OF_CHARACTERS; i++) {
@@ -160,8 +182,6 @@ public class TurnManager : MonoBehaviour {
                 // Getting the output
                 neuralNetworkOutput = neuralNetwork.RunNeuralNetwork();
 
-                // Applying the output to a structure that can sort the values
-                targetCommandResult.Clear();
                 for (int commandValue = 1; commandValue < NUMBER_OUTPUTS; commandValue++) {
                     TargetCommandResult result = new TargetCommandResult(i, neuralNetworkOutput[0], commandValue, neuralNetworkOutput[commandValue]);
                     targetCommandResult.Add(result);
@@ -185,6 +205,11 @@ public class TurnManager : MonoBehaviour {
         // Sort the targetResult to have the best target and command chosen
         targetCommandResult.Sort((s1, s2) => s2.probability.CompareTo(s1.probability));
         indexBiggestProbability = -1;
+
+        // for testing
+        /*for (int i = 0; i < 6; i++) {
+            print(i + " option: " + );
+        }*/
 
         do {
             indexBiggestProbability++;

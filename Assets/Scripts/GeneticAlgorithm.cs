@@ -9,7 +9,11 @@ public class GeneticAlgorithm : MonoBehaviour {
     private const int NUMBER_INPUTS = 33;
     private const int NUMBER_OUTPUTS = 12;
 
-    private const int POPULATION_SIZE = 20;
+    private const int POPULATION_SIZE = 30;
+
+
+    // Other scripts
+    TurnManager turnManager;
 
     class Unit {
         public double[,] chromosome;
@@ -27,11 +31,26 @@ public class GeneticAlgorithm : MonoBehaviour {
         }
     }
 
-    List<Unit> populationLeftTeam = new List<Unit>();
-    List<Unit> populationRightTeam = new List<Unit>();
+    List<Unit> gamePopulation = new List<Unit>();
 
     // Auxiliar variables
     int i, j;
+    int actualIndex = 0;
+
+    void Start() {
+        // Loading the population from disk
+        bool gamePopupationLoaded = LoadPopulation(gamePopulation, "population.data");
+
+        // If failed, create
+        if (!gamePopupationLoaded)
+            if (CreatePopulation(gamePopulation))
+                SavePopulation(gamePopulation, "population.data");
+
+        turnManager = GameObject.Find("Main Camera").GetComponent<TurnManager>();
+
+        // Begin the game with this
+        Invoke("Evaluation", 0.3f);
+    }
 
     private bool LoadPopulation(List<Unit> population, System.String fileName) {
         try {
@@ -126,28 +145,45 @@ public class GeneticAlgorithm : MonoBehaviour {
         
     }
 
-    void Start() {
-        // Loading the populations from disk
-        bool leftTeamPopultionLoaded = LoadPopulation(populationLeftTeam, "leftTeam.data");
-        bool rightTeamPopultionLoaded = LoadPopulation(populationRightTeam, "rightTeam.data");
+    private void Evaluation() {
+        // Reset game values
+        turnManager.ResetGame();
 
-        // If failed, create them
-        if (!leftTeamPopultionLoaded)
-            if (CreatePopulation(populationLeftTeam))
-                SavePopulation(populationLeftTeam, "leftTeam.data");
+        // Setting the NN weight
+        for (; actualIndex < POPULATION_SIZE / 2; actualIndex++) { // Looking for the first to be evaluated
+            if (gamePopulation[2 * actualIndex].tested)
+                continue;
 
-        if (!rightTeamPopultionLoaded)
-            if (CreatePopulation(populationRightTeam))
-                SavePopulation(populationRightTeam, "rightTeam.data");
+            // If runs here, found the chromosomes to be used this time
+            turnManager.SetNeuralNetworkWeights(gamePopulation[2 * actualIndex].chromosome, gamePopulation[2 * actualIndex + 1].chromosome);
+            break;
+        }
 
-        // For testing
-        /*if (leftTeamPopultionLoaded)
-            print("Loaded from disk");
-        else
-            print("Created now");
+        // Check if finished evaluating the population
+        if (actualIndex == POPULATION_SIZE / 2) {
+            PrepareNextGeneration();
+            return;
+        }
 
-        for (i = 0; i < NUMBER_INPUTS / 6; i++)
-            for (j = 0; j < NUMBER_OUTPUTS / 3; j++)
-                print(populationLeftTeam[0].chromosome[i, j]);*/
+        // If is here, there are still chromosomes to be evaluated, and it is already setted on the NN
+        turnManager.BeginGame();
+
     }
+
+    public void Evaluated(int leftTeamFitness, int rightTeamFitness) {
+        // Setting the fitness
+        gamePopulation[2 * actualIndex].fitness = leftTeamFitness;
+        gamePopulation[2 * actualIndex + 1].fitness = rightTeamFitness;
+
+        // Marking as evaluated
+        gamePopulation[2 * actualIndex].tested = gamePopulation[2 * actualIndex + 1].tested = true;
+
+        // nextIndex
+        actualIndex++;
+    }
+
+    private void PrepareNextGeneration() {
+        print("Prepare next generation");
+    }
+
 }

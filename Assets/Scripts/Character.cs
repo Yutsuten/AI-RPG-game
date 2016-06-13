@@ -94,21 +94,15 @@ public class Character : MonoBehaviour {
     private const int MP_HEALING_SKILL = 80;
 
 	void Start() {
-        hp_current = hp_max;
-        mp_current = mp_max;
-
         // Getting the inventory
         if (leftTeam)
             inventory = GameObject.Find("LeftTeam").GetComponent<Item>();
         else
             inventory = GameObject.Find("RightTeam").GetComponent<Item>();
 
+        ResetStatus();
+
         displayGui = characterInfo.GetComponent<EditGui>();
-
-        /*if (this.characterName == "Tomato B") {
-            MyTurn(targets[0], USING_ITEM, EARTH_DAMAGE);
-        }*/
-
         spriteRenderer = this.GetComponent<SpriteRenderer>();
 
         // Taking the console
@@ -243,10 +237,30 @@ public class Character : MonoBehaviour {
 
     }
 
+    public void ResetStatus() {
+        hp_current = hp_max;
+        mp_current = mp_max;
+
+        command = 0;
+        subCommand = 0;
+        turnTiming = 0;
+        fighting = true;
+        state = 3;
+        moving = false;
+        waitTime = 1.0f;
+        dealedDamage = false;
+
+        finishedAnimation = new bool[2];
+        damageAnimationTimeout = 0.0f;
+        damageAnimation = false;
+        healingAnimation = false;
+        unconsciousAnimation = false;
+    }
+
     /// <summary>
     /// Update turn variable.
     /// </summary>
-    /// <returns>If may have a turn now</returns>
+    /// <returns>The turn timing value</returns>
     public int UpdateTurn() {
         return turnTiming += speed + Random.Range(0, 10); // speed plus random 0~9
     }

@@ -47,6 +47,12 @@ public class Item : MonoBehaviour {
         inventory[5].name = "Potion";
 	}
 
+    public void ResetItems() {
+        for (int i = 0; i < inventory.Length; i++) {
+            inventory[i].quantity = 1;
+        }
+    }
+
     public void UseItem(int itemId, GameObject target, GameObject source) {
         inventory[--itemId].quantity--;
         target.GetComponent<Character>().TakingItem(inventory[itemId].type, inventory[itemId].power, inventory[itemId].name, source);

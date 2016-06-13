@@ -7,6 +7,9 @@ public class NeuralNetwork : MonoBehaviour {
     private const int NUMBER_INPUTS = 33;
     private const int NUMBER_OUTPUTS = 12;
 
+    // Sigmoid constant
+    private const double SIGMOID_ALPHA = 0.005;
+
     // Neural Network variables
     private double[] input = new double[NUMBER_INPUTS];
     private double[,] weight = new double[NUMBER_INPUTS, NUMBER_OUTPUTS];
@@ -18,9 +21,10 @@ public class NeuralNetwork : MonoBehaviour {
     public bool SetWeightMatrix(double[,] weightMatrix) {
         try {
             // Setting the weight matrix
-            for (int i = 0; i < NUMBER_INPUTS; i++)
+            /*for (int i = 0; i < NUMBER_INPUTS; i++)
                 for (int j = 0; j < NUMBER_OUTPUTS; j++)
-                    weight[i, j] = weightMatrix[i, j];
+                    weight[i, j] = weightMatrix[i, j];*/
+            weight = weightMatrix;
 
             // Success
             return true;
@@ -65,6 +69,10 @@ public class NeuralNetwork : MonoBehaviour {
             input[30] = itemWindAvailable ? 1000 : 0;
             input[31] = itemPotionAvailable ? 1000 : 0;
             input[32] = targetIsEnemie ? 1000 : -1000;
+
+            // Reducing the range of the input from -1000 ~ 1000 to: value * SIGMOID_ALPHA
+            for (int i = 0; i < NUMBER_INPUTS; i++)
+                input[i] *= SIGMOID_ALPHA;
             return true;
         }
         catch (System.Exception e) {
@@ -102,7 +110,7 @@ public class NeuralNetwork : MonoBehaviour {
         return k / (1.0 + k);
 
         // Mathematically-equivalent to:
-        // return 1.0 / (1.0 + (double) Math.Exp(-value));
+        //return 1.0 / (1.0 + (double)System.Math.Exp(-value));
     }
 
 }
