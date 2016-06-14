@@ -18,7 +18,7 @@ public class GeneticAlgorithm : MonoBehaviour {
     class Unit {
         public double[,] chromosome;
         public bool tested = false;
-        public int fitness = 0;
+        public float fitness = 0;
 
         public Unit(double[,] chromosomeMatrix) {
             chromosome = chromosomeMatrix;

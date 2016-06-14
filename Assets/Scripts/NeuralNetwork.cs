@@ -8,7 +8,7 @@ public class NeuralNetwork : MonoBehaviour {
     private const int NUMBER_OUTPUTS = 12;
 
     // Sigmoid constant
-    private const double SIGMOID_ALPHA = 0.005;
+    private const double SIGMOID_ALPHA = 0.001;
 
     // Neural Network variables
     private double[] input = new double[NUMBER_INPUTS];

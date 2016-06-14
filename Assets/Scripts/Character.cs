@@ -5,6 +5,7 @@ public class Character : MonoBehaviour {
 
     // Information of itself
     public System.String characterName;
+    public byte characterID;
     public GameObject characterInfo;
     private GameObject consoleInfo;
 
@@ -93,14 +94,15 @@ public class Character : MonoBehaviour {
     private const int MP_STRONG_SKILL = 110;
     private const int MP_HEALING_SKILL = 80;
 
+    // FITNESS CALCULATION
+    private const float DAMAGE_POWER = 1.5f;
+
 	void Start() {
         // Getting the inventory
         if (leftTeam)
             inventory = GameObject.Find("LeftTeam").GetComponent<Item>();
         else
             inventory = GameObject.Find("RightTeam").GetComponent<Item>();
-
-        ResetStatus();
 
         displayGui = characterInfo.GetComponent<EditGui>();
         spriteRenderer = this.GetComponent<SpriteRenderer>();
@@ -113,11 +115,6 @@ public class Character : MonoBehaviour {
 	}
 
     void Update() {
-        diplayInfo = System.String.Concat(characterName, System.Environment.NewLine,
-            "HP ", hp_current, "/", hp_max, System.Environment.NewLine,
-            "MP ", mp_current, "/", mp_max);
-        displayGui.ChangeText(diplayInfo);
-
         #region DAMAGE_ANIMATION
         if (damageAnimation) {
             damageAnimationTimeout -= Time.deltaTime * DAMAGE_ANIMATION_SPEED;
@@ -255,6 +252,11 @@ public class Character : MonoBehaviour {
         damageAnimation = false;
         healingAnimation = false;
         unconsciousAnimation = false;
+
+        diplayInfo = System.String.Concat(characterName, System.Environment.NewLine,
+            "HP ", hp_current, "/", hp_max, System.Environment.NewLine,
+            "MP ", mp_current, "/", mp_max);
+        displayGui.ChangeText(diplayInfo);
     }
 
     /// <summary>
@@ -364,6 +366,7 @@ public class Character : MonoBehaviour {
         else if (subCommand == HEALING_SKILL) {
             this.mp_current -= MP_HEALING_SKILL;
         }
+        Update_HP_MP();
     }
 
     private void UseItem() {
@@ -373,6 +376,13 @@ public class Character : MonoBehaviour {
 
     public bool ItemAvailable(int itemId) {
         return (inventory.ItemQuantity(itemId) > 0);
+    }
+
+    private void Update_HP_MP() {
+        diplayInfo = System.String.Concat(characterName, System.Environment.NewLine,
+            "HP ", hp_current, "/", hp_max, System.Environment.NewLine,
+            "MP ", mp_current, "/", mp_max);
+        displayGui.ChangeText(diplayInfo);
     }
 
     // CALLED FROM ATTACKER
@@ -399,6 +409,14 @@ public class Character : MonoBehaviour {
             unconsciousAnimation = true;
             fighting = false;
         }
+
+        Update_HP_MP();
+
+        // Updating team's Fitness - DAMAGE Dealed
+        Character sourceScript = source.GetComponent<Character>();
+        float fitnessValue = (float)System.Math.Pow(damage, DAMAGE_POWER);
+        turnManager.UpdateFitness(sourceScript.characterID, sourceScript.leftTeam, (sourceScript.leftTeam != this.leftTeam ? fitnessValue : -fitnessValue),
+            (sourceScript.leftTeam != this.leftTeam ? !fighting : false));
 
         // Printing on Console
         consoleInfo.GetComponent<Console>().AddMessage(this.source.GetComponent<Character>().characterName +
@@ -441,6 +459,14 @@ public class Character : MonoBehaviour {
                 fighting = false;
             }
 
+            Update_HP_MP();
+
+            // Updating team's Fitness - DAMAGE Dealed
+            Character sourceScript = source.GetComponent<Character>();
+            float fitnessValue = (float)System.Math.Pow(damage, DAMAGE_POWER);
+            turnManager.UpdateFitness(sourceScript.characterID, sourceScript.leftTeam, (sourceScript.leftTeam != this.leftTeam ? fitnessValue : -fitnessValue),
+                (sourceScript.leftTeam != this.leftTeam ? !fighting : false));
+
             // Printing on Console
             consoleInfo.GetComponent<Console>().AddMessage(this.source.GetComponent<Character>().characterName +
                 " used skill on " + this.characterName + ". Damage: " + damage);
@@ -454,6 +480,8 @@ public class Character : MonoBehaviour {
             // Healing animation
             damageAnimationTimeout = 1.0f;
             healingAnimation = true;
+
+            Update_HP_MP();
 
             // Printing on Console
             consoleInfo.GetComponent<Console>().AddMessage(this.source.GetComponent<Character>().characterName +
@@ -487,6 +515,14 @@ public class Character : MonoBehaviour {
                 fighting = false;
             }
 
+            Update_HP_MP();
+
+            // Updating team's Fitness - DAMAGE Dealed
+            Character sourceScript = source.GetComponent<Character>();
+            float fitnessValue = (float)System.Math.Pow(damage, DAMAGE_POWER);
+            turnManager.UpdateFitness(sourceScript.characterID, sourceScript.leftTeam, (sourceScript.leftTeam != this.leftTeam ? fitnessValue : -fitnessValue),
+                (sourceScript.leftTeam != this.leftTeam ? !fighting : false)); // only give defeat bonus if is an enemy
+
             // Printing on Console
             consoleInfo.GetComponent<Console>().AddMessage(this.source.GetComponent<Character>().characterName +
                 " used " + itemName + " on " + this.characterName + ". Damage: " + damage);
@@ -498,6 +534,8 @@ public class Character : MonoBehaviour {
             // Healing animation
             damageAnimationTimeout = 1.0f;
             healingAnimation = true;
+
+            Update_HP_MP();
 
             // Printing on Console
             consoleInfo.GetComponent<Console>().AddMessage(this.source.GetComponent<Character>().characterName +

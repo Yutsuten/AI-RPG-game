@@ -73,6 +73,12 @@ public class TurnManager : MonoBehaviour {
     private double[] neuralNetworkOutput = new double[NUMBER_OUTPUTS];
     private int indexBiggestProbability;
 
+    private float leftTeamFitness;
+    private float rightTeamFitness;
+    private float defeatBonus;
+    private bool updateDefeatBonus;
+    private bool[] alreadyAttacked;
+
     // Members objects (set on Unity Editor)
     public GameObject[] members = new GameObject[NUMBER_OF_CHARACTERS];
     private Character[] character = new Character[NUMBER_OF_CHARACTERS];
@@ -80,6 +86,8 @@ public class TurnManager : MonoBehaviour {
     // Scripts
     private Item leftTeamInventory;
     private Item righTeamInventory;
+    private EditGui leftTeamFitnessUI;
+    private EditGui rightTeamFitnessUI;
 
     // Neural Network Component
     private NeuralNetwork neuralNetwork;
@@ -110,7 +118,39 @@ public class TurnManager : MonoBehaviour {
         teamObject = GameObject.Find("RightTeam");
         rightTeamNeuralNetwork = teamObject.GetComponent<NeuralNetwork>();
         righTeamInventory = teamObject.GetComponent<Item>();
+
+        leftTeamFitnessUI = GameObject.Find("Canvas/LeftFitnessInfo").GetComponent<EditGui>();
+        rightTeamFitnessUI = GameObject.Find("Canvas/RightFitnessInfo").GetComponent<EditGui>();
 	}
+
+    public void UpdateFitness(byte id, bool leftTeam, float addValue, bool targetDefeated) {
+        // Add the fitness value, check if the target is still 'on game'  (giving the bonus), and update the UI
+        if (leftTeam) {
+            leftTeamFitness += addValue + (targetDefeated ? defeatBonus : 0);
+            leftTeamFitnessUI.ChangeText(System.String.Format("Fitness{0}{1}", System.Environment.NewLine, leftTeamFitness));
+        }
+
+        else { // right team
+            rightTeamFitness += addValue + (targetDefeated ? defeatBonus : 0);
+            rightTeamFitnessUI.ChangeText(System.String.Format("Fitness{0}{1}", System.Environment.NewLine, rightTeamFitness));
+        } 
+
+        // Update the defeated target bonus on fitness
+        if (updateDefeatBonus) {
+            defeatBonus *= 0.98f;
+        }
+        else { // Everyone's first turn
+            if (alreadyAttacked[id]) {
+                updateDefeatBonus = true;
+                defeatBonus *= 0.98f;
+            }
+            else
+                alreadyAttacked[id] = true;
+        }
+
+        // For curiosity
+        print("Defeat enemy bonus: " + defeatBonus);
+    }
 
     public void ResetGame() {
         for (int i = 0; i < NUMBER_OF_CHARACTERS; i++) {
@@ -119,6 +159,16 @@ public class TurnManager : MonoBehaviour {
         }
         leftTeamInventory.ResetItems();
         righTeamInventory.ResetItems();
+
+        leftTeamFitness = 0;
+        rightTeamFitness = 0;
+        defeatBonus = 10000;
+        updateDefeatBonus = false;
+        alreadyAttacked = new bool[NUMBER_OF_CHARACTERS]; // Default is FALSE
+
+        // Reset Fitness UI
+        leftTeamFitnessUI.ChangeText(System.String.Format("Fitness{0}{1}", System.Environment.NewLine, leftTeamFitness));
+        rightTeamFitnessUI.ChangeText(System.String.Format("Fitness{0}{1}", System.Environment.NewLine, rightTeamFitness));
     }
 
     public void BeginGame() {
