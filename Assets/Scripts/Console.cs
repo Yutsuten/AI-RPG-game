@@ -30,4 +30,10 @@ public class Console : MonoBehaviour {
         consoleGui.ChangeText(logText);
     }
 
+    public void ClearMessages() {
+        for (int i = 0; i < log.Length; i++)
+            log[i] = System.String.Empty;
+        consoleGui.ChangeText(System.String.Empty);
+    }
+
 }

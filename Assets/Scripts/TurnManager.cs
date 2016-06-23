@@ -94,6 +94,11 @@ public class TurnManager : MonoBehaviour {
     private NeuralNetwork leftTeamNeuralNetwork;
     private NeuralNetwork rightTeamNeuralNetwork;
 
+    // Genetic Algorithm Component
+    private GeneticAlgorithm geneticAlgorithm;
+
+    private Console console;
+
     // Creating the list of members with the turnTiming information
     private List<MembersManager> membersData = new List<MembersManager>();
 
@@ -121,18 +126,22 @@ public class TurnManager : MonoBehaviour {
 
         leftTeamFitnessUI = GameObject.Find("Canvas/LeftFitnessInfo").GetComponent<EditGui>();
         rightTeamFitnessUI = GameObject.Find("Canvas/RightFitnessInfo").GetComponent<EditGui>();
+
+        console = GameObject.Find("Canvas/Console").GetComponent<Console>();
+
+        geneticAlgorithm = this.gameObject.GetComponent<GeneticAlgorithm>();
 	}
 
     public void UpdateFitness(byte id, bool leftTeam, float addValue, bool targetDefeated) {
         // Add the fitness value, check if the target is still 'on game'  (giving the bonus), and update the UI
         if (leftTeam) {
             leftTeamFitness += addValue + (targetDefeated ? defeatBonus : 0);
-            leftTeamFitnessUI.ChangeText(System.String.Format("Fitness{0}{1}", System.Environment.NewLine, leftTeamFitness));
+            leftTeamFitnessUI.ChangeText(System.String.Format("Fitness{0}{1:0.0}", System.Environment.NewLine, leftTeamFitness));
         }
 
         else { // right team
             rightTeamFitness += addValue + (targetDefeated ? defeatBonus : 0);
-            rightTeamFitnessUI.ChangeText(System.String.Format("Fitness{0}{1}", System.Environment.NewLine, rightTeamFitness));
+            rightTeamFitnessUI.ChangeText(System.String.Format("Fitness{0}{1:0.0}", System.Environment.NewLine, rightTeamFitness));
         }
 
         UpdateDefeatBonus(id);
@@ -141,19 +150,19 @@ public class TurnManager : MonoBehaviour {
     public void UpdateDefeatBonus(byte id) {
         // Update the defeated target bonus on fitness
         if (updateDefeatBonus) {
-            defeatBonus *= 0.98f;
+            defeatBonus *= 0.985f;
         }
         else { // Everyone's first turn
             if (alreadyAttacked[id]) {
                 updateDefeatBonus = true;
-                defeatBonus *= 0.98f;
+                defeatBonus *= 0.985f;
             }
             else
                 alreadyAttacked[id] = true;
         }
 
         // For curiosity
-        print("Defeat enemy bonus: " + defeatBonus);
+        print(System.String.Format("Defeat enemy bonus: {0:0.0}", defeatBonus));
     }
 
     public void ResetGame() {
@@ -166,21 +175,26 @@ public class TurnManager : MonoBehaviour {
 
         leftTeamFitness = 0;
         rightTeamFitness = 0;
-        defeatBonus = 10000;
+        defeatBonus = 12000;
         updateDefeatBonus = false;
         alreadyAttacked = new bool[NUMBER_OF_CHARACTERS]; // Default is FALSE
 
         // Reset Fitness UI
         leftTeamFitnessUI.ChangeText(System.String.Format("Fitness{0}{1}", System.Environment.NewLine, leftTeamFitness));
         rightTeamFitnessUI.ChangeText(System.String.Format("Fitness{0}{1}", System.Environment.NewLine, rightTeamFitness));
+
+        console.ClearMessages();
     }
 
     public void BeginGame() {
-        Invoke("SearchNext", 0.3f);
+        Invoke("SearchNext", 1.0f);
+    }
+
+    private void EndBattle() {
+        geneticAlgorithm.Evaluated(leftTeamFitness, rightTeamFitness);
     }
 
     public void SetNeuralNetworkWeights(double[,] leftTeamNN_Weights, double[,] rightTeamNN_Weights) {
-        
         // Setting weights for both teams
         leftTeamNeuralNetwork.SetWeightMatrix(leftTeamNN_Weights);
         rightTeamNeuralNetwork.SetWeightMatrix(rightTeamNN_Weights);
@@ -202,16 +216,27 @@ public class TurnManager : MonoBehaviour {
 
         // Checking if there is a valid target
         if (!membersData[0].member.targets[0].GetComponent<Character>().OnGame() &&
-            !membersData[0].member.targets[1].GetComponent<Character>().OnGame() &&
-            !membersData[0].member.targets[2].GetComponent<Character>().OnGame()) {
+                !membersData[0].member.targets[1].GetComponent<Character>().OnGame() &&
+                !membersData[0].member.targets[2].GetComponent<Character>().OnGame()) {
             // If entered here, there is a winner
-                if (membersData[0].member.leftTeam) {
-                    print("Left team wins!");
-                }
-                else {
-                    print("Right team wins!");
-                }
-                return;
+            if (membersData[0].member.leftTeam) {
+                print(System.String.Format("End of battle. Left team wins! Fitness {0:0.00} x {1:0.00}", leftTeamFitness, rightTeamFitness));
+                console.AddMessage("End of battle. Left team wins!");
+            }
+            else {
+                print(System.String.Format("End of battle. Right team wins! Fitness {0:0.00} x {1:0.00}", leftTeamFitness, rightTeamFitness));
+                console.AddMessage("End of battle. Right team wins!");
+            }
+            EndBattle();
+            return;
+        }
+
+        // Checking if happened a loop
+        if (defeatBonus < 1000f) {
+            print(System.String.Format("End of battle. This is a draw. Fitness {0:0.00} x {1:0.00}", leftTeamFitness, rightTeamFitness));
+            console.AddMessage("End of battle. This is a draw.");
+            EndBattle();
+            return;
         }
 
         successfullCommand = false;

@@ -254,6 +254,9 @@ public class Character : MonoBehaviour {
         healingAnimation = false;
         unconsciousAnimation = false;
 
+        // Default color
+        spriteRenderer.color = new Color(1, 1, 1, 1);
+
         Update_HP_MP();
     }
 
@@ -387,7 +390,8 @@ public class Character : MonoBehaviour {
     private float CalculateDamage(float attackerDamagePower, float defenderResistPower) {
         float damageMultiplier = attackerDamagePower / (0.3f * attackerDamagePower + 1.2f * defenderResistPower);
         damageMultiplier = damageMultiplier > 0.2f ? damageMultiplier : 0.2f;
-        return (0.2f * attackerDamagePower) * damageMultiplier;
+        float damage = (0.3f * attackerDamagePower) * damageMultiplier;
+        return (damage + Random.Range(-0.15f, 0.15f) * damage);
     } 
 
     // CALLED FROM ATTACKER

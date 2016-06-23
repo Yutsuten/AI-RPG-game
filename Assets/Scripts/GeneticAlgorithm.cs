@@ -24,7 +24,7 @@ public class GeneticAlgorithm : MonoBehaviour {
             chromosome = chromosomeMatrix;
         }
 
-        public Unit(double[,] chromosomeMatrix, bool testedValue, int fitnessValue) {
+        public Unit(double[,] chromosomeMatrix, bool testedValue, float fitnessValue) {
             chromosome = chromosomeMatrix;
             tested = testedValue;
             fitness = fitnessValue;
@@ -61,7 +61,7 @@ public class GeneticAlgorithm : MonoBehaviour {
                 using (var filestream = File.Open(fileDirectory, FileMode.Open))
                 using (var binaryStream = new BinaryReader(filestream)) {
                     bool testedValue;
-                    int fitnessValue;
+                    float fitnessValue;
                     // Looking for all units
                     for (int unit = 0; unit < POPULATION_SIZE; unit++) {
                         double[,] chromosomeToLoad = new double[NUMBER_INPUTS, NUMBER_OUTPUTS];
@@ -70,7 +70,7 @@ public class GeneticAlgorithm : MonoBehaviour {
                             for (j = 0; j < NUMBER_OUTPUTS; j++)
                                 chromosomeToLoad[i, j] = binaryStream.ReadDouble(); // Probably there is a more efficient way to load the matrix
                         testedValue = binaryStream.ReadBoolean();
-                        fitnessValue = binaryStream.ReadInt32();
+                        fitnessValue = binaryStream.ReadSingle();
 
                         Unit loadedUnit = new Unit(chromosomeToLoad, testedValue, fitnessValue);
                         population.Add(loadedUnit);
@@ -151,8 +151,10 @@ public class GeneticAlgorithm : MonoBehaviour {
 
         // Setting the NN weight
         for (; actualIndex < POPULATION_SIZE / 2; actualIndex++) { // Looking for the first to be evaluated
-            if (gamePopulation[2 * actualIndex].tested)
+            if (gamePopulation[2 * actualIndex].tested) {
+                print(System.String.Format("Chromosomes already tested. Fitness: [{0}] {1:0.00}; [{2}] {3:0.00}", 2 * actualIndex, gamePopulation[2 * actualIndex].fitness, 2 * actualIndex + 1, gamePopulation[2 * actualIndex + 1].fitness));
                 continue;
+            }
 
             print(System.String.Concat("Left team chromosome: ", 2 * actualIndex, ". Right team chromosome: ", 2 * actualIndex + 1, "."));
             // If runs here, found the chromosomes to be used this time
@@ -179,7 +181,7 @@ public class GeneticAlgorithm : MonoBehaviour {
 
     }
 
-    public void Evaluated(int leftTeamFitness, int rightTeamFitness) {
+    public void Evaluated(float leftTeamFitness, float rightTeamFitness) {
         // Setting the fitness
         gamePopulation[2 * actualIndex].fitness = leftTeamFitness;
         gamePopulation[2 * actualIndex + 1].fitness = rightTeamFitness;
@@ -187,8 +189,14 @@ public class GeneticAlgorithm : MonoBehaviour {
         // Marking as evaluated
         gamePopulation[2 * actualIndex].tested = gamePopulation[2 * actualIndex + 1].tested = true;
 
+        // Saving the population
+        SavePopulation(gamePopulation, "population.data");
+
         // nextIndex
         actualIndex++;
+
+        // Beggining the next battle
+        Invoke("Evaluation", 3.0f);
     }
 
     private void PrepareNextGeneration() {
