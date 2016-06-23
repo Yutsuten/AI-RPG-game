@@ -133,8 +133,12 @@ public class TurnManager : MonoBehaviour {
         else { // right team
             rightTeamFitness += addValue + (targetDefeated ? defeatBonus : 0);
             rightTeamFitnessUI.ChangeText(System.String.Format("Fitness{0}{1}", System.Environment.NewLine, rightTeamFitness));
-        } 
+        }
 
+        UpdateDefeatBonus(id);
+    }
+
+    public void UpdateDefeatBonus(byte id) {
         // Update the defeated target bonus on fitness
         if (updateDefeatBonus) {
             defeatBonus *= 0.98f;

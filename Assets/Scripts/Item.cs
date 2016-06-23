@@ -36,14 +36,14 @@ public class Item : MonoBehaviour {
         for (int i = 0; i < inventory.Length; i++) {
             inventory[i].quantity = 1;
             inventory[i].type = i + 1;
-            inventory[i].power = 40;
+            inventory[i].power = 200;
         }
 
-        inventory[0].name = "Stick";
-        inventory[1].name = "Ice";
-        inventory[2].name = "Bomb";
-        inventory[3].name = "Stone";
-        inventory[4].name = "Balloon";
+        inventory[0].name = "Stone";
+        inventory[1].name = "Water Bomb";
+        inventory[2].name = "Fire Bomb";
+        inventory[3].name = "Stone Bomb";
+        inventory[4].name = "Wind Bomb";
         inventory[5].name = "Potion";
 	}
 

@@ -60,11 +60,11 @@ public class GeneticAlgorithm : MonoBehaviour {
                 // Opening the file
                 using (var filestream = File.Open(fileDirectory, FileMode.Open))
                 using (var binaryStream = new BinaryReader(filestream)) {
-                    double[,] chromosomeToLoad = new double[NUMBER_INPUTS, NUMBER_OUTPUTS];
                     bool testedValue;
                     int fitnessValue;
                     // Looking for all units
                     for (int unit = 0; unit < POPULATION_SIZE; unit++) {
+                        double[,] chromosomeToLoad = new double[NUMBER_INPUTS, NUMBER_OUTPUTS];
                         // Taking the chromosome matrix
                         for (i = 0; i < NUMBER_INPUTS; i++)
                             for (j = 0; j < NUMBER_OUTPUTS; j++)
@@ -118,9 +118,9 @@ public class GeneticAlgorithm : MonoBehaviour {
             // Certify that the population is empty
             population.Clear();
 
-            // Instantiating the chomossomes for both teams
-            double[,] chromosome = new double[NUMBER_INPUTS, NUMBER_OUTPUTS];
             for (int unit = 0; unit < POPULATION_SIZE; unit++) {
+                // Instantiating the chomossomes
+                double[,] chromosome = new double[NUMBER_INPUTS, NUMBER_OUTPUTS];
 
                 // Creating the chromosomes 
                 for (i = 0; i < NUMBER_INPUTS; i++)
@@ -154,8 +154,17 @@ public class GeneticAlgorithm : MonoBehaviour {
             if (gamePopulation[2 * actualIndex].tested)
                 continue;
 
+            print(System.String.Concat("Left team chromosome: ", 2 * actualIndex, ". Right team chromosome: ", 2 * actualIndex + 1, "."));
             // If runs here, found the chromosomes to be used this time
             turnManager.SetNeuralNetworkWeights(gamePopulation[2 * actualIndex].chromosome, gamePopulation[2 * actualIndex + 1].chromosome);
+            /*print("First chromosome");
+            for (int i = 0; i < NUMBER_INPUTS; i++)
+                for (int j = 0; j < NUMBER_OUTPUTS; j++)
+                    print(System.String.Format("[{0}; {1}] = {2:0.00}", i, j, gamePopulation[2 * actualIndex].chromosome[i, j]));
+            print("Second chromosome");
+            for (int i = 0; i < NUMBER_INPUTS; i++)
+                for (int j = 0; j < NUMBER_OUTPUTS; j++)
+                    print(System.String.Format("[{0}; {1}] = {2:0.00}", i, j, gamePopulation[2 * actualIndex + 1].chromosome[i, j]));*/
             break;
         }
 

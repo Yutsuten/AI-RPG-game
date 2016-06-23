@@ -96,6 +96,7 @@ public class Character : MonoBehaviour {
 
     // FITNESS CALCULATION
     private const float DAMAGE_POWER = 1.5f;
+    private const float HEAL_POWER = 1.4f;
 
 	void Start() {
         // Getting the inventory
@@ -253,10 +254,7 @@ public class Character : MonoBehaviour {
         healingAnimation = false;
         unconsciousAnimation = false;
 
-        diplayInfo = System.String.Concat(characterName, System.Environment.NewLine,
-            "HP ", hp_current, "/", hp_max, System.Environment.NewLine,
-            "MP ", mp_current, "/", mp_max);
-        displayGui.ChangeText(diplayInfo);
+        Update_HP_MP();
     }
 
     /// <summary>
@@ -330,7 +328,8 @@ public class Character : MonoBehaviour {
         else { // is defending
             consoleInfo.GetComponent<Console>().AddMessage(this.characterName + " is defending.");
             //print(this.characterName + " is defending.");
-            Invoke("FinishedTurn", 0.3f);
+            turnManager.UpdateDefeatBonus(this.characterID);
+            Invoke("FinishedTurn", 0.5f);
         }
         return true;
     }
@@ -380,20 +379,26 @@ public class Character : MonoBehaviour {
 
     private void Update_HP_MP() {
         diplayInfo = System.String.Concat(characterName, System.Environment.NewLine,
-            "HP ", hp_current, "/", hp_max, System.Environment.NewLine,
-            "MP ", mp_current, "/", mp_max);
+            "HP ", (int)hp_current, "/", hp_max, System.Environment.NewLine,
+            "MP ", (int)mp_current, "/", mp_max);
         displayGui.ChangeText(diplayInfo);
     }
 
+    private float CalculateDamage(float attackerDamagePower, float defenderResistPower) {
+        float damageMultiplier = attackerDamagePower / (0.3f * attackerDamagePower + 1.2f * defenderResistPower);
+        damageMultiplier = damageMultiplier > 0.2f ? damageMultiplier : 0.2f;
+        return (0.2f * attackerDamagePower) * damageMultiplier;
+    } 
+
     // CALLED FROM ATTACKER
     public void TakingAttack(int atkValue, GameObject source) {
-        int damage;
-
+        float damage;
+        
         // Check if is defending
         if (this.command == DEFENDING)
-            damage = (atkValue - this.defense * 2) > 0 ? (atkValue - this.defense * 2) : 0; // Damage calculation
+            damage = CalculateDamage(atkValue, 1.5f * this.defense); // Damage calculation
         else // No defending - normal damage
-            damage = (atkValue - this.defense) > 0 ? (atkValue - this.defense) : 0; // Damage calculation
+            damage = CalculateDamage(atkValue, this.defense); // Damage calculation
         hp_current -= damage;
 
         // Attacker
@@ -405,6 +410,7 @@ public class Character : MonoBehaviour {
 
         // Validation if still have HP
         if (hp_current <= 0) {
+            damage += (int)hp_current;
             hp_current = 0;
             unconsciousAnimation = true;
             fighting = false;
@@ -419,8 +425,7 @@ public class Character : MonoBehaviour {
             (sourceScript.leftTeam != this.leftTeam ? !fighting : false));
 
         // Printing on Console
-        consoleInfo.GetComponent<Console>().AddMessage(this.source.GetComponent<Character>().characterName +
-            " attacked " + this.characterName + ". Damage: " + damage);
+        consoleInfo.GetComponent<Console>().AddMessage(System.String.Format("{0} attacked {1}. Damage: {2:0.#}", this.source.GetComponent<Character>().characterName, this.characterName, damage));
 
         //print(this.gameObject + " taking damage");
         //print(this.source + " was attacker");
@@ -431,7 +436,7 @@ public class Character : MonoBehaviour {
         this.source = source;
 
         if (subCommand == STRONG_SKILL) {
-            magicValue *= 2;
+            magicValue = (int) (magicValue * 1.2f);
         }
         if (subCommand != HEALING_SKILL) {
             // Checking advantage or disvantages
@@ -441,11 +446,11 @@ public class Character : MonoBehaviour {
                 magicValue /= 2;
 
             // Damage calculation
-            int damage;
+            float damage;
             if (this.command == DEFENDING)
-                damage = (magicValue - this.resistance * 2) > 0 ? (magicValue - this.resistance * 2) : 0;
+                damage = CalculateDamage(magicValue, 1.5f * this.resistance);
             else // No defending - normal damage
-                damage = (magicValue - this.resistance) > 0 ? (magicValue - this.resistance) : 0;
+                damage = CalculateDamage(magicValue, this.resistance);
             hp_current -= damage;
 
             // Damage animation
@@ -454,6 +459,7 @@ public class Character : MonoBehaviour {
 
             // Validation if still have HP
             if (hp_current <= 0) {
+                damage += (int)hp_current;
                 hp_current = 0;
                 unconsciousAnimation = true;
                 fighting = false;
@@ -468,11 +474,10 @@ public class Character : MonoBehaviour {
                 (sourceScript.leftTeam != this.leftTeam ? !fighting : false));
 
             // Printing on Console
-            consoleInfo.GetComponent<Console>().AddMessage(this.source.GetComponent<Character>().characterName +
-                " used skill on " + this.characterName + ". Damage: " + damage);
+            consoleInfo.GetComponent<Console>().AddMessage(System.String.Format("{0} used skill on {1}. Damage: {2:0.#}", this.source.GetComponent<Character>().characterName, this.characterName, damage));
         }
         else { // Healing skill
-            int healValue = magicValue / 2;
+            float healValue = (0.5f * magicValue < hp_max - hp_current) ? (0.5f * magicValue) : (hp_max - hp_current);
             hp_current += healValue;
             /*if (hp_current > hp_max)
                 hp_current = hp_max;*/
@@ -483,9 +488,14 @@ public class Character : MonoBehaviour {
 
             Update_HP_MP();
 
+            // Updating team's Fitness - HEALING
+            Character sourceScript = source.GetComponent<Character>();
+            float fitnessValue = (float)System.Math.Pow(healValue, HEAL_POWER);
+            turnManager.UpdateFitness(sourceScript.characterID, sourceScript.leftTeam, (sourceScript.leftTeam == this.leftTeam ? fitnessValue : -fitnessValue),
+                false); //(sourceScript.leftTeam == this.leftTeam ? !fighting : false)
+
             // Printing on Console
-            consoleInfo.GetComponent<Console>().AddMessage(this.source.GetComponent<Character>().characterName +
-                " used skill on " + this.characterName + ". Healed: " + healValue);
+            consoleInfo.GetComponent<Console>().AddMessage(System.String.Format("{0} used skill on {1}. Healed: {2:0.#}", this.source.GetComponent<Character>().characterName, this.characterName, healValue));
         }
     }
 
@@ -501,7 +511,7 @@ public class Character : MonoBehaviour {
                 itemStrength /= 2;
 
             // Damage calculation
-            int damage = itemStrength;
+            float damage = CalculateDamage(itemStrength, this.resistance);
             hp_current -= damage;
 
             // Damage animation
@@ -510,6 +520,7 @@ public class Character : MonoBehaviour {
 
             // Validation if still have HP
             if (hp_current <= 0) {
+                damage += (int)hp_current;
                 hp_current = 0;
                 unconsciousAnimation = true;
                 fighting = false;
@@ -524,11 +535,10 @@ public class Character : MonoBehaviour {
                 (sourceScript.leftTeam != this.leftTeam ? !fighting : false)); // only give defeat bonus if is an enemy
 
             // Printing on Console
-            consoleInfo.GetComponent<Console>().AddMessage(this.source.GetComponent<Character>().characterName +
-                " used " + itemName + " on " + this.characterName + ". Damage: " + damage);
+            consoleInfo.GetComponent<Console>().AddMessage(System.String.Format("{0} used {1} on {2}. Damage: {3:0.#}", this.source.GetComponent<Character>().characterName, itemName, this.characterName, damage));
         }
         else { // Healing item
-            int healValue = itemStrength;
+            float healValue = (itemStrength < hp_max - hp_current) ? itemStrength : (hp_max - hp_current);
             hp_current += healValue;
 
             // Healing animation
@@ -537,9 +547,14 @@ public class Character : MonoBehaviour {
 
             Update_HP_MP();
 
+            // Updating team's Fitness - HEALING
+            Character sourceScript = source.GetComponent<Character>();
+            float fitnessValue = (float)System.Math.Pow(healValue, HEAL_POWER);
+            turnManager.UpdateFitness(sourceScript.characterID, sourceScript.leftTeam, (sourceScript.leftTeam == this.leftTeam ? fitnessValue : -fitnessValue),
+                false);
+
             // Printing on Console
-            consoleInfo.GetComponent<Console>().AddMessage(this.source.GetComponent<Character>().characterName +
-                " used " + itemName + " on " + this.characterName + ". Heal: " + healValue);
+            consoleInfo.GetComponent<Console>().AddMessage(System.String.Format("{0} used {1} on {2}. Damage: {3:0.#}", this.source.GetComponent<Character>().characterName, itemName, this.characterName, healValue));
         }
     }
 

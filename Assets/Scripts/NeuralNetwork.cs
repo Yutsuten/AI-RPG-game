@@ -8,7 +8,7 @@ public class NeuralNetwork : MonoBehaviour {
     private const int NUMBER_OUTPUTS = 12;
 
     // Sigmoid constant
-    private const double SIGMOID_ALPHA = 0.001;
+    private const double SIGMOID_ALPHA = 0.002;
 
     // Neural Network variables
     private double[] input = new double[NUMBER_INPUTS];
@@ -25,6 +25,10 @@ public class NeuralNetwork : MonoBehaviour {
                 for (int j = 0; j < NUMBER_OUTPUTS; j++)
                     weight[i, j] = weightMatrix[i, j];*/
             weight = weightMatrix;
+            /*print("Setting weight matrix");
+            for (int i = 0; i < NUMBER_INPUTS; i++)
+                for (int j = 0; j < NUMBER_OUTPUTS; j++)
+                    print(System.String.Format("[{0}; {1}] = {2:0.00}", i, j, weight[i, j]));*/
 
             // Success
             return true;
