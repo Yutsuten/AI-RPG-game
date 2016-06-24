@@ -14,6 +14,7 @@ public class GeneticAlgorithm : MonoBehaviour {
 
     // Other scripts
     TurnManager turnManager;
+    EditGui generationInfo;
 
     class Unit {
         public double[,] chromosome;
@@ -52,6 +53,9 @@ public class GeneticAlgorithm : MonoBehaviour {
             }
 
         turnManager = GameObject.Find("Main Camera").GetComponent<TurnManager>();
+        generationInfo = GameObject.Find("Canvas/GenerationInfo").GetComponent<EditGui>();
+
+        generationInfo.ChangeText(System.String.Format("Generation {0} - Battle {1}", generation, 1));
 
         // Begin the game with this
         Invoke("Evaluation", 0.3f);
@@ -165,6 +169,7 @@ public class GeneticAlgorithm : MonoBehaviour {
                 continue;
             }
 
+            generationInfo.ChangeText(System.String.Format("Generation {0} - Battle {1}", generation, actualIndex + 1));
             print(System.String.Concat("Left team chromosome: ", 2 * actualIndex, ". Right team chromosome: ", 2 * actualIndex + 1, "."));
             // If runs here, found the chromosomes to be used this time
             turnManager.SetNeuralNetworkWeights(gamePopulation[2 * actualIndex].chromosome, gamePopulation[2 * actualIndex + 1].chromosome);
@@ -213,8 +218,13 @@ public class GeneticAlgorithm : MonoBehaviour {
         generation++;
         List<Unit> nextPopulation = new List<Unit>();
         float crossoverRate = 0.9f;
+        float mutationRate = 0.01f;
         // Generating the next generation (selection + crossover)
-        nextPopulation = Selection(nextPopulation, crossoverRate);
+        Selection(nextPopulation, crossoverRate);
+        // Applying the mutation on the new members of the population
+        Mutation(nextPopulation, mutationRate);
+        // Finished creating new Generation
+        generationInfo.ChangeText(System.String.Format("Generation {0} - Battle {1}", generation, 1));
     }
 
     private Unit Roulette(List<Unit> population) {
@@ -238,28 +248,12 @@ public class GeneticAlgorithm : MonoBehaviour {
         return selectedUnit;
     }
 
-    private List<Unit> Selection(List<Unit> nextPopulation, float crossoverRate) {
-        // 1 - Letting all fitness values become a least 0
-        /*float smallestFitness = 1000, biggestFitness = -1000;
-        int biggestFitnessIndex = 0, secondBiggestFitnessIndex = 0;
-        for (int i = 0; i < POPULATION_SIZE; i++) {
-            // Finding the smallest fitness
-            if (gamePopulation[i].fitness < smallestFitness)
-                smallestFitness = gamePopulation[i].fitness;
-            // Finding the biggest fitness
-            if (gamePopulation[i].fitness > biggestFitness) {
-                biggestFitness = gamePopulation[i].fitness;
-                secondBiggestFitnessIndex = biggestFitnessIndex;
-                biggestFitnessIndex = i;
-            }
-        }*/
+    private void Selection(List<Unit> nextPopulation, float crossoverRate) {
 
+        // 1 - Letting all fitness values become a least 0
         gamePopulation.Sort((s1, s2) => s2.fitness.CompareTo(s1.fitness));
+
         // Adding the smallest fitness on everyone
-        /*if (smallestFitness < 0) {
-            for (int i = 0; i < POPULATION_SIZE; i++)
-                gamePopulation[i].fitness += smallestFitness;
-        }*/
         if (gamePopulation[POPULATION_SIZE - 1].fitness < 0)
             for (int i = 0; i < POPULATION_SIZE; i++)
                 gamePopulation[i].fitness -= gamePopulation[POPULATION_SIZE - 1].fitness;
@@ -287,10 +281,10 @@ public class GeneticAlgorithm : MonoBehaviour {
         }
 
         // 4 - Reset the fitness value of the copied chromosomes
-        /*for (int i = 0; i < nextPopulation.Count; i++)
-            nextPopulation[i].tested = false;*/
+        for (int i = 0; i < nextPopulation.Count; i++)
+            nextPopulation[i].tested = false;
 
-        return nextPopulation;
+        return;
     }
 
     private Unit[] Crossover(double[,] firstParent, double[,] secondParent) {
@@ -315,6 +309,20 @@ public class GeneticAlgorithm : MonoBehaviour {
         offspring[0] = new Unit(firstOffspringChromosome);
         offspring[1] = new Unit(secondOffspringChromosome);
         return offspring;
+    }
+
+    private void Mutation(List<Unit> nextPopulation, float mutationRate) {
+        float mutationRange = 0.3f; // How 'strong' will the mutation change a value on the chromosome
+        int memberNumber, i, j;
+        // Applying the mutation to everyone except the 2 first ones (elitism)
+        for (memberNumber = 2; memberNumber < nextPopulation.Count; memberNumber++) {
+            for (i = 0; i < NUMBER_INPUTS; i++) {
+                for (j = 0; j < NUMBER_OUTPUTS; j++) {
+                    if (Random.Range(0f, 1f) < mutationRate)
+                        nextPopulation[memberNumber].chromosome[i, j] += Random.Range(-mutationRange, mutationRange);
+                }
+            }
+        }
     }
 
 }

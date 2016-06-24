@@ -132,14 +132,18 @@ public class TurnManager : MonoBehaviour {
         geneticAlgorithm = this.gameObject.GetComponent<GeneticAlgorithm>();
 	}
 
-    public void UpdateFitness(byte id, bool leftTeam, float addValue, bool targetDefeated) {
+    public void UpdateFitness(byte id, bool leftTeam, float addValue, bool targetDefeated, bool friendlyFire) {
         // Add the fitness value, check if the target is still 'on game'  (giving the bonus), and update the UI
         if (leftTeam) {
+            if (friendlyFire)
+                leftTeamFitness -= 100;
             leftTeamFitness += addValue + (targetDefeated ? defeatBonus : 0);
             leftTeamFitnessUI.ChangeText(System.String.Format("Fitness{0}{1:0.0}", System.Environment.NewLine, leftTeamFitness));
         }
 
         else { // right team
+            if (friendlyFire)
+                rightTeamFitness -= 100;
             rightTeamFitness += addValue + (targetDefeated ? defeatBonus : 0);
             rightTeamFitnessUI.ChangeText(System.String.Format("Fitness{0}{1:0.0}", System.Environment.NewLine, rightTeamFitness));
         }

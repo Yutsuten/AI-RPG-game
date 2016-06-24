@@ -426,7 +426,7 @@ public class Character : MonoBehaviour {
         Character sourceScript = source.GetComponent<Character>();
         float fitnessValue = (float)System.Math.Pow(damage, DAMAGE_POWER);
         turnManager.UpdateFitness(sourceScript.characterID, sourceScript.leftTeam, (sourceScript.leftTeam != this.leftTeam ? fitnessValue : -fitnessValue),
-            (sourceScript.leftTeam != this.leftTeam ? !fighting : false));
+            (sourceScript.leftTeam != this.leftTeam ? !fighting : false), sourceScript.leftTeam == this.leftTeam);
 
         // Printing on Console
         consoleInfo.GetComponent<Console>().AddMessage(System.String.Format("{0} attacked {1}. Damage: {2:0.#}", this.source.GetComponent<Character>().characterName, this.characterName, damage));
@@ -475,7 +475,7 @@ public class Character : MonoBehaviour {
             Character sourceScript = source.GetComponent<Character>();
             float fitnessValue = (float)System.Math.Pow(damage, DAMAGE_POWER);
             turnManager.UpdateFitness(sourceScript.characterID, sourceScript.leftTeam, (sourceScript.leftTeam != this.leftTeam ? fitnessValue : -fitnessValue),
-                (sourceScript.leftTeam != this.leftTeam ? !fighting : false));
+                (sourceScript.leftTeam != this.leftTeam ? !fighting : false), sourceScript.leftTeam == this.leftTeam);
 
             // Printing on Console
             consoleInfo.GetComponent<Console>().AddMessage(System.String.Format("{0} used skill on {1}. Damage: {2:0.#}", this.source.GetComponent<Character>().characterName, this.characterName, damage));
@@ -496,7 +496,7 @@ public class Character : MonoBehaviour {
             Character sourceScript = source.GetComponent<Character>();
             float fitnessValue = (float)System.Math.Pow(healValue, HEAL_POWER);
             turnManager.UpdateFitness(sourceScript.characterID, sourceScript.leftTeam, (sourceScript.leftTeam == this.leftTeam ? fitnessValue : -fitnessValue),
-                false); //(sourceScript.leftTeam == this.leftTeam ? !fighting : false)
+                false, sourceScript.leftTeam != this.leftTeam); //(sourceScript.leftTeam == this.leftTeam ? !fighting : false)
 
             // Printing on Console
             consoleInfo.GetComponent<Console>().AddMessage(System.String.Format("{0} used skill on {1}. Healed: {2:0.#}", this.source.GetComponent<Character>().characterName, this.characterName, healValue));
@@ -536,7 +536,7 @@ public class Character : MonoBehaviour {
             Character sourceScript = source.GetComponent<Character>();
             float fitnessValue = (float)System.Math.Pow(damage, DAMAGE_POWER);
             turnManager.UpdateFitness(sourceScript.characterID, sourceScript.leftTeam, (sourceScript.leftTeam != this.leftTeam ? fitnessValue : -fitnessValue),
-                (sourceScript.leftTeam != this.leftTeam ? !fighting : false)); // only give defeat bonus if is an enemy
+                (sourceScript.leftTeam != this.leftTeam ? !fighting : false), sourceScript.leftTeam == this.leftTeam); // only give defeat bonus if is an enemy
 
             // Printing on Console
             consoleInfo.GetComponent<Console>().AddMessage(System.String.Format("{0} used {1} on {2}. Damage: {3:0.#}", this.source.GetComponent<Character>().characterName, itemName, this.characterName, damage));
@@ -555,10 +555,10 @@ public class Character : MonoBehaviour {
             Character sourceScript = source.GetComponent<Character>();
             float fitnessValue = (float)System.Math.Pow(healValue, HEAL_POWER);
             turnManager.UpdateFitness(sourceScript.characterID, sourceScript.leftTeam, (sourceScript.leftTeam == this.leftTeam ? fitnessValue : -fitnessValue),
-                false);
+                false, sourceScript.leftTeam != this.leftTeam);
 
             // Printing on Console
-            consoleInfo.GetComponent<Console>().AddMessage(System.String.Format("{0} used {1} on {2}. Damage: {3:0.#}", this.source.GetComponent<Character>().characterName, itemName, this.characterName, healValue));
+            consoleInfo.GetComponent<Console>().AddMessage(System.String.Format("{0} used {1} on {2}. Healed: {3:0.#}", this.source.GetComponent<Character>().characterName, itemName, this.characterName, healValue));
         }
     }
 
