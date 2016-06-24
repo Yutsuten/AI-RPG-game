@@ -6,6 +6,8 @@ public class TurnManager : MonoBehaviour {
     // Battle info
     private const int NUMBER_OF_CHARACTERS = 6;
 
+    private const int DEFEAT_BONUS = 10000;
+
     // Aux info
     private const int ZERO_PROBABILITY = -1;
     private const int NUMBER_OUTPUTS = 12; // of the neural network
@@ -137,6 +139,8 @@ public class TurnManager : MonoBehaviour {
         if (leftTeam) {
             if (friendlyFire)
                 leftTeamFitness -= 100;
+            else
+                leftTeamFitness += 50;
             leftTeamFitness += addValue + (targetDefeated ? defeatBonus : 0);
             leftTeamFitnessUI.ChangeText(System.String.Format("Fitness{0}{1:0.0}", System.Environment.NewLine, leftTeamFitness));
         }
@@ -144,6 +148,8 @@ public class TurnManager : MonoBehaviour {
         else { // right team
             if (friendlyFire)
                 rightTeamFitness -= 100;
+            else
+                rightTeamFitness += 50;
             rightTeamFitness += addValue + (targetDefeated ? defeatBonus : 0);
             rightTeamFitnessUI.ChangeText(System.String.Format("Fitness{0}{1:0.0}", System.Environment.NewLine, rightTeamFitness));
         }
@@ -179,7 +185,7 @@ public class TurnManager : MonoBehaviour {
 
         leftTeamFitness = 0;
         rightTeamFitness = 0;
-        defeatBonus = 12000;
+        defeatBonus = DEFEAT_BONUS;
         updateDefeatBonus = false;
         alreadyAttacked = new bool[NUMBER_OF_CHARACTERS]; // Default is FALSE
 

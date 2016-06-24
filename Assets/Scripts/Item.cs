@@ -39,7 +39,7 @@ public class Item : MonoBehaviour {
             inventory[i].power = 200;
         }
 
-        inventory[0].name = "Stone";
+        inventory[0].name = "Physical Bomb";
         inventory[1].name = "Water Bomb";
         inventory[2].name = "Fire Bomb";
         inventory[3].name = "Stone Bomb";
