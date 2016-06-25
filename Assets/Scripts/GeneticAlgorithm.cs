@@ -218,33 +218,47 @@ public class GeneticAlgorithm : MonoBehaviour {
         generation++;
         List<Unit> nextPopulation = new List<Unit>();
         float crossoverRate = 0.9f;
-        float mutationRate = 0.01f;
+        float mutationRate = 0.015f;
         // Generating the next generation (selection + crossover)
         Selection(nextPopulation, crossoverRate);
         // Applying the mutation on the new members of the population
         Mutation(nextPopulation, mutationRate);
         // Finished creating new Generation
+        gamePopulation = nextPopulation;
         generationInfo.ChangeText(System.String.Format("Generation {0} - Battle {1}", generation, 1));
+        // Beggining the new battles
+        actualIndex = 0;
+        Invoke("Evaluation", 0.5f);
     }
 
-    private Unit Roulette(List<Unit> population) {
+    private Unit Roulette(List<Unit> population, Unit firstParent) {
+        bool again;
         float fitnessSum = 0;
-        // SUM of all fitness
-        for (int i = 0; i < population.Count; i++)
-            fitnessSum += population[i].fitness;
-        // Random for selection
-        float rouletteValue = Random.Range(0f, fitnessSum);
-        // Looking for the selected chromosome
+        float rouletteValue;
         Unit selectedUnit = null;
-        for (int i = 0; i < population.Count; i++) {
-            rouletteValue -= population[i].fitness;
-            if (rouletteValue <= 0.00001f) {
-                // Found the selected chromosome, transfer it to the new generation
-                selectedUnit = population[i];
-                population.RemoveAt(i);
-                break;
+        do {
+            again = false;
+            // SUM of all fitness
+            for (int i = 0; i < population.Count; i++)
+                fitnessSum += population[i].fitness;
+            // Random for selection
+            rouletteValue = Random.Range(0f, fitnessSum);
+            // Looking for the selected chromosome
+            for (int i = 0; i < population.Count; i++) {
+                rouletteValue -= population[i].fitness;
+                if (rouletteValue <= 0.00001f) {
+                    if (population[i] == firstParent) {
+                        again = true;
+                        break;
+                    }
+                    // Found the selected chromosome, transfer it to the new generation
+                    selectedUnit = population[i];
+                    //population.RemoveAt(i);
+                    break;
+                }
             }
-        }
+        } while (again);
+        
         return selectedUnit;
     }
 
@@ -266,8 +280,8 @@ public class GeneticAlgorithm : MonoBehaviour {
         // 3 - Select using the Roulette algorithm, and make the crossover
         Unit firstParent, secondParent;
         while (nextPopulation.Count < POPULATION_SIZE) {
-            firstParent = Roulette(gamePopulation);
-            secondParent = Roulette(gamePopulation);
+            firstParent = Roulette(gamePopulation, null);
+            secondParent = Roulette(gamePopulation, firstParent);
             // Checking if will happen crossover
             if (Random.Range(0f, 1f) < crossoverRate) {
                 Unit[] offspring = Crossover(firstParent.chromosome, secondParent.chromosome);
