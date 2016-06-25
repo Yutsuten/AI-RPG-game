@@ -164,15 +164,15 @@ public class GeneticAlgorithm : MonoBehaviour {
 
         // Setting the NN weight
         for (; actualIndex < POPULATION_SIZE / 2; actualIndex++) { // Looking for the first to be evaluated
-            if (gamePopulation[2 * actualIndex].tested) {
-                print(System.String.Format("Chromosomes already tested. Fitness: [{0}] {1:0.00}; [{2}] {3:0.00}", 2 * actualIndex, gamePopulation[2 * actualIndex].fitness, 2 * actualIndex + 1, gamePopulation[2 * actualIndex + 1].fitness));
+            if (gamePopulation[actualIndex].tested) {
+                print(System.String.Format("Chromosomes already tested. Fitness: [{0}] {1:0.00}; [{2}] {3:0.00}", actualIndex, gamePopulation[actualIndex].fitness, POPULATION_SIZE - actualIndex - 1, gamePopulation[POPULATION_SIZE - actualIndex - 1].fitness));
                 continue;
             }
 
             generationInfo.ChangeText(System.String.Format("Generation {0} - Battle {1}", generation, actualIndex + 1));
             //print(System.String.Concat("Left team chromosome: ", 2 * actualIndex, ". Right team chromosome: ", 2 * actualIndex + 1, "."));
             // If runs here, found the chromosomes to be used this time
-            turnManager.SetNeuralNetworkWeights(gamePopulation[2 * actualIndex].chromosome, gamePopulation[2 * actualIndex + 1].chromosome);
+            turnManager.SetNeuralNetworkWeights(gamePopulation[actualIndex].chromosome, gamePopulation[POPULATION_SIZE - actualIndex - 1].chromosome);
             /*print("First chromosome");
             for (int i = 0; i < NUMBER_INPUTS; i++)
                 for (int j = 0; j < NUMBER_OUTPUTS; j++)
@@ -197,11 +197,11 @@ public class GeneticAlgorithm : MonoBehaviour {
 
     public void Evaluated(float leftTeamFitness, float rightTeamFitness) {
         // Setting the fitness
-        gamePopulation[2 * actualIndex].fitness = leftTeamFitness;
-        gamePopulation[2 * actualIndex + 1].fitness = rightTeamFitness;
+        gamePopulation[actualIndex].fitness = leftTeamFitness;
+        gamePopulation[POPULATION_SIZE - actualIndex - 1].fitness = rightTeamFitness;
 
         // Marking as evaluated
-        gamePopulation[2 * actualIndex].tested = gamePopulation[2 * actualIndex + 1].tested = true;
+        gamePopulation[actualIndex].tested = gamePopulation[POPULATION_SIZE - actualIndex - 1].tested = true;
 
         // Saving the population
         SavePopulation(gamePopulation, "population.data");
@@ -254,15 +254,14 @@ public class GeneticAlgorithm : MonoBehaviour {
 
     private Unit Roulette(List<Unit> population, Unit firstParent) {
         bool again;
-        float fitnessSum;
+        float fitnessSum = 0;
         float rouletteValue;
         Unit selectedUnit = null;
+        // SUM of all fitness
+        for (int i = 0; i < population.Count; i++)
+            fitnessSum += population[i].fitness;
         do {
             again = false;
-            fitnessSum = 0;
-            // SUM of all fitness
-            for (int i = 0; i < population.Count; i++)
-                fitnessSum += population[i].fitness;
             // Random for selection
             rouletteValue = Random.Range(0f, fitnessSum);
             // Looking for the selected chromosome

@@ -439,15 +439,20 @@ public class Character : MonoBehaviour {
         // Attacker
         this.source = source;
 
-        if (subCommand == STRONG_SKILL) {
-            magicValue = (int) (magicValue * 1.2f);
-        }
         if (subCommand != HEALING_SKILL) {
+
+            // Buffing skill
+            magicValue = (int)(magicValue * 1.3f);
+
+            if (subCommand == STRONG_SKILL) {
+                magicValue = (int)(magicValue * 1.2f);
+            }
+
             // Checking advantage or disvantages
             if (elementResist[element] == 0)
-                magicValue *= 2;
+                magicValue = (int) (1.5f * magicValue);
             else if (elementResist[element] == 2)
-                magicValue /= 2;
+                magicValue = (int)(0.6f * magicValue);
 
             // Damage calculation
             float damage;
