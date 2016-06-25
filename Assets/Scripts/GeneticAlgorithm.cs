@@ -170,7 +170,7 @@ public class GeneticAlgorithm : MonoBehaviour {
             }
 
             generationInfo.ChangeText(System.String.Format("Generation {0} - Battle {1}", generation, actualIndex + 1));
-            print(System.String.Concat("Left team chromosome: ", 2 * actualIndex, ". Right team chromosome: ", 2 * actualIndex + 1, "."));
+            //print(System.String.Concat("Left team chromosome: ", 2 * actualIndex, ". Right team chromosome: ", 2 * actualIndex + 1, "."));
             // If runs here, found the chromosomes to be used this time
             turnManager.SetNeuralNetworkWeights(gamePopulation[2 * actualIndex].chromosome, gamePopulation[2 * actualIndex + 1].chromosome);
             /*print("First chromosome");
@@ -214,6 +214,26 @@ public class GeneticAlgorithm : MonoBehaviour {
     }
 
     private void PrepareNextGeneration() {
+        // Saving this generation information
+        float smallestFitness = gamePopulation[0].fitness;
+        float biggestFitness = gamePopulation[0].fitness;
+        float sumFitness = gamePopulation[0].fitness;
+        for (int i = 1; i < POPULATION_SIZE; i++) {
+            if (gamePopulation[i].fitness < smallestFitness)
+                smallestFitness = gamePopulation[i].fitness;
+            if (gamePopulation[i].fitness > biggestFitness)
+                biggestFitness = gamePopulation[i].fitness;
+            sumFitness += gamePopulation[i].fitness;
+        }
+        System.String saveInfo = System.String.Concat("Generation ", generation) + System.Environment.NewLine +
+                                       System.String.Format("Smallest fitness: {0:0.00}; Biggest fitness: {1:0.00}", smallestFitness, biggestFitness) + System.Environment.NewLine +
+                                       System.String.Format("Mean fitness: {0:0.00}", sumFitness / POPULATION_SIZE) + System.Environment.NewLine;
+
+        print(saveInfo);
+        using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"Assets\SavedData\generationsInfo.txt", true)) {
+                file.WriteLine(saveInfo);
+        }
+        // Preparing next generation
         print("Preparing next generation");
         generation++;
         List<Unit> nextPopulation = new List<Unit>();
@@ -225,6 +245,7 @@ public class GeneticAlgorithm : MonoBehaviour {
         Mutation(nextPopulation, mutationRate);
         // Finished creating new Generation
         gamePopulation = nextPopulation;
+        SavePopulation(gamePopulation, "population.data");
         generationInfo.ChangeText(System.String.Format("Generation {0} - Battle {1}", generation, 1));
         // Beggining the new battles
         actualIndex = 0;
@@ -233,11 +254,12 @@ public class GeneticAlgorithm : MonoBehaviour {
 
     private Unit Roulette(List<Unit> population, Unit firstParent) {
         bool again;
-        float fitnessSum = 0;
+        float fitnessSum;
         float rouletteValue;
         Unit selectedUnit = null;
         do {
             again = false;
+            fitnessSum = 0;
             // SUM of all fitness
             for (int i = 0; i < population.Count; i++)
                 fitnessSum += population[i].fitness;
@@ -284,6 +306,7 @@ public class GeneticAlgorithm : MonoBehaviour {
             secondParent = Roulette(gamePopulation, firstParent);
             // Checking if will happen crossover
             if (Random.Range(0f, 1f) < crossoverRate) {
+                //print(System.String.Format("First parent fitness: {0:0.0}; Second parent fitness: {1:0.0}", firstParent.fitness, secondParent.fitness));
                 Unit[] offspring = Crossover(firstParent.chromosome, secondParent.chromosome);
                 nextPopulation.Add(offspring[0]);
                 nextPopulation.Add(offspring[1]);

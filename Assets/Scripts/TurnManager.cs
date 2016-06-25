@@ -172,7 +172,7 @@ public class TurnManager : MonoBehaviour {
         }
 
         // For curiosity
-        print(System.String.Format("Defeat enemy bonus: {0:0.0}", defeatBonus));
+        //print(System.String.Format("Defeat enemy bonus: {0:0.0}", defeatBonus));
     }
 
     public void ResetGame() {

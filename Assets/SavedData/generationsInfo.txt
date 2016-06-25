@@ -1,0 +1,4 @@
+Generation 0
+Smallest fitness: -14046.43; Biggest fitness: 33714.68
+Mean fitness: 2149.03
+
