@@ -157,7 +157,7 @@ public class TurnManager : MonoBehaviour {
         UpdateDefeatBonus(id);
     }
 
-    public void UpdateDefeatBonus(byte id) {
+    private void UpdateDefeatBonus(byte id) {
         // Update the defeated target bonus on fitness
         if (updateDefeatBonus) {
             defeatBonus *= 0.985f;

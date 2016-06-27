@@ -331,7 +331,7 @@ public class Character : MonoBehaviour {
         else { // is defending
             consoleInfo.GetComponent<Console>().AddMessage(this.characterName + " is defending.");
             //print(this.characterName + " is defending.");
-            turnManager.UpdateDefeatBonus(this.characterID);
+            turnManager.UpdateFitness(this.characterID, this.leftTeam, -100f, false, false);
             Invoke("FinishedTurn", 0.5f);
         }
         return true;

@@ -40,6 +40,7 @@ public class GeneticAlgorithm : MonoBehaviour {
     // Auxiliar variables
     int i, j;
     int actualIndex = 0;
+    float gameSpeed = 1.0f;
 
     void Start() {
         // Loading the population from disk
@@ -59,6 +60,13 @@ public class GeneticAlgorithm : MonoBehaviour {
 
         // Begin the game with this
         Invoke("Evaluation", 0.3f);
+    }
+
+    void Update() {
+        if (Input.GetMouseButtonDown(0)) {
+            gameSpeed = (gameSpeed == 1.0f) ? 10.0f : 1.0f;
+            Time.timeScale = gameSpeed;
+        }
     }
 
     private bool LoadPopulation(List<Unit> population, System.String fileName) {
@@ -162,9 +170,12 @@ public class GeneticAlgorithm : MonoBehaviour {
         // Reset game values
         turnManager.ResetGame();
 
+        /*for (int i = 0; i < gamePopulation.Count; i++)
+            print(System.String.Format("[{0}] {1}", i, gamePopulation[i].tested));*/
+
         // Setting the NN weight
         for (; actualIndex < POPULATION_SIZE / 2; actualIndex++) { // Looking for the first to be evaluated
-            if (gamePopulation[actualIndex].tested) {
+            if (gamePopulation[actualIndex].tested && gamePopulation[POPULATION_SIZE - actualIndex - 1].tested) {
                 print(System.String.Format("Chromosomes already tested. Fitness: [{0}] {1:0.00}; [{2}] {3:0.00}", actualIndex, gamePopulation[actualIndex].fitness, POPULATION_SIZE - actualIndex - 1, gamePopulation[POPULATION_SIZE - actualIndex - 1].fitness));
                 continue;
             }
@@ -243,8 +254,13 @@ public class GeneticAlgorithm : MonoBehaviour {
         Selection(nextPopulation, crossoverRate);
         // Applying the mutation on the new members of the population
         Mutation(nextPopulation, mutationRate);
+        // Reset the fitness value
+        for (int i = 0; i < nextPopulation.Count; i++)
+            nextPopulation[i].tested = false;
         // Finished creating new Generation
         gamePopulation = nextPopulation;
+        /*for (int i = 0; i < gamePopulation.Count; i++)
+            print(System.String.Format("[{0}] {1}", i, gamePopulation[i].tested));*/
         SavePopulation(gamePopulation, "population.data");
         generationInfo.ChangeText(System.String.Format("Generation {0} - Battle {1}", generation, 1));
         // Beggining the new battles
@@ -315,10 +331,6 @@ public class GeneticAlgorithm : MonoBehaviour {
                 nextPopulation.Add(secondParent);
             }
         }
-
-        // 4 - Reset the fitness value of the copied chromosomes
-        for (int i = 0; i < nextPopulation.Count; i++)
-            nextPopulation[i].tested = false;
 
         return;
     }
