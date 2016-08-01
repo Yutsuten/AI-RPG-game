@@ -395,37 +395,75 @@ public class Character : MonoBehaviour {
     private float CalculateDamage(float attackerDamagePower, float defenderResistPower) {
         float damageMultiplier = attackerDamagePower / (0.3f * attackerDamagePower + 1.2f * defenderResistPower);
         damageMultiplier = damageMultiplier > 0.2f ? damageMultiplier : 0.2f;
-        float damage = (0.3f * attackerDamagePower) * damageMultiplier;
-        return (damage + Random.Range(-0.15f, 0.15f) * damage);
-    } 
+        return (0.3f * attackerDamagePower) * damageMultiplier;
+        //return (damage + Random.Range(-0.15f, 0.15f) * damage);
+    }
+
+    private float SkillMultiplier(int skillUsed)
+    {
+        if (skillUsed == WEAK_SKILL)
+            return 1.5f;
+        if (skillUsed == STRONG_SKILL)
+            return 2.0f;
+        // Others
+        return 1f;
+    }
+
+    private float ElementalMultiplier(int attackElement)
+    {
+        if (elementResist[attackElement] == 0) // Weak
+            return 1.5f;
+        if (elementResist[attackElement] == 2) // Strong
+            return 0.6f;
+        // Normal
+        return 1f;
+    }
+
+    private float DefendingMultiplier()
+    {
+        if (command == DEFENDING) // Is defending
+            return 0.5f;
+        // No defending
+        return 1f;
+    }
+
+    private float RandomMultiplier()
+    {
+        return Random.Range(0.85f, 1.15f);
+    }
 
     // CALLED FROM ATTACKER
     public void TakingAttack(int atkValue, GameObject source) {
-        float damage;
-        
-        // Check if is defending
-        if (this.command == DEFENDING)
-            damage = CalculateDamage(atkValue, 1.5f * this.defense); // Damage calculation
-        else // No defending - normal damage
-            damage = CalculateDamage(atkValue, this.defense); // Damage calculation
-        hp_current -= damage;
-
-        // Attacker
+        // Remebering the attacker
         this.source = source;
 
-        // Damage animation
-        damageAnimationTimeout = 1.0f;
-        damageAnimation = true;
+        float damage;
 
+        // Initial damage
+        damage = CalculateDamage(atkValue, this.defense);
+        // Element influence
+        damage *= ElementalMultiplier(PHYSICAL_DAMAGE);
+        // Defending influence
+        damage *= DefendingMultiplier();
+        // Random influence
+        damage *= RandomMultiplier();
+
+        // Subtract from life
+        hp_current -= damage;
         // Validation if still have HP
-        if (hp_current <= 0) {
+        if (hp_current <= 0)
+        {
             damage += (int)hp_current;
             hp_current = 0;
             unconsciousAnimation = true;
             fighting = false;
         }
-
+        // Update GUI
         Update_HP_MP();
+
+        // Damage animation
+        damageAnimationTimeout = 1.0f;
+        damageAnimation = true;
 
         // Updating team's Fitness - DAMAGE Dealed
         Character sourceScript = source.GetComponent<Character>();
@@ -434,52 +472,47 @@ public class Character : MonoBehaviour {
             (sourceScript.leftTeam != this.leftTeam ? !fighting : false), sourceScript.leftTeam == this.leftTeam);
 
         // Printing on Console
-        consoleInfo.GetComponent<Console>().AddMessage(System.String.Format("{0} attacked {1}. Damage: {2:0.#}", this.source.GetComponent<Character>().characterName, this.characterName, damage));
+        consoleInfo.GetComponent<Console>().AddMessage(System.String.Format("{0} attacked {1}. Damage: {2:0.#}", source.GetComponent<Character>().characterName, this.characterName, damage));
 
         //print(this.gameObject + " taking damage");
         //print(this.source + " was attacker");
     }
 
     public void TakingSkill(int magicValue, int element, int subCommand, GameObject source) {
-        // Attacker
+        // Remebering the attacker
         this.source = source;
 
+        // Offensive skill
         if (subCommand != HEALING_SKILL) {
-
-            // Buffing skill
-            magicValue = (int)(magicValue * 1.3f);
-
-            if (subCommand == STRONG_SKILL) {
-                magicValue = (int)(magicValue * 1.2f);
-            }
-
-            // Checking advantage or disvantages
-            if (elementResist[element] == 0)
-                magicValue = (int) (1.5f * magicValue);
-            else if (elementResist[element] == 2)
-                magicValue = (int)(0.6f * magicValue);
-
-            // Damage calculation
             float damage;
-            if (this.command == DEFENDING)
-                damage = CalculateDamage(magicValue, 1.5f * this.resistance);
-            else // No defending - normal damage
-                damage = CalculateDamage(magicValue, this.resistance);
+
+            // Initial damage
+            damage = CalculateDamage(magicValue, this.resistance);
+            // Skill used influence
+            damage *= SkillMultiplier(subCommand);
+            // Element influence
+            damage *= ElementalMultiplier(element);
+            // Defending influence
+            damage *= DefendingMultiplier();
+            // Random influence
+            damage *= RandomMultiplier();
+
+            // Subtract from life
             hp_current -= damage;
-
-            // Damage animation
-            damageAnimationTimeout = 1.0f;
-            damageAnimation = true;
-
             // Validation if still have HP
-            if (hp_current <= 0) {
+            if (hp_current <= 0)
+            {
                 damage += (int)hp_current;
                 hp_current = 0;
                 unconsciousAnimation = true;
                 fighting = false;
             }
-
+            // Update GUI
             Update_HP_MP();
+
+            // Damage animation
+            damageAnimationTimeout = 1.0f;
+            damageAnimation = true;
 
             // Updating team's Fitness - DAMAGE Dealed
             Character sourceScript = source.GetComponent<Character>();
@@ -488,19 +521,17 @@ public class Character : MonoBehaviour {
                 (sourceScript.leftTeam != this.leftTeam ? !fighting : false), sourceScript.leftTeam == this.leftTeam);
 
             // Printing on Console
-            consoleInfo.GetComponent<Console>().AddMessage(System.String.Format("{0} used skill on {1}. Damage: {2:0.#}", this.source.GetComponent<Character>().characterName, this.characterName, damage));
+            consoleInfo.GetComponent<Console>().AddMessage(System.String.Format("{0} used skill on {1}. Damage: {2:0.#}", source.GetComponent<Character>().characterName, this.characterName, damage));
         }
         else { // Healing skill
             float healValue = (0.5f * magicValue < hp_max - hp_current) ? (0.5f * magicValue) : (hp_max - hp_current);
             hp_current += healValue;
-            /*if (hp_current > hp_max)
-                hp_current = hp_max;*/
+            // Update GUI
+            Update_HP_MP();
 
             // Healing animation
             damageAnimationTimeout = 1.0f;
             healingAnimation = true;
-
-            Update_HP_MP();
 
             // Updating team's Fitness - HEALING
             Character sourceScript = source.GetComponent<Character>();
@@ -509,38 +540,42 @@ public class Character : MonoBehaviour {
                 false, sourceScript.leftTeam != this.leftTeam); //(sourceScript.leftTeam == this.leftTeam ? !fighting : false)
 
             // Printing on Console
-            consoleInfo.GetComponent<Console>().AddMessage(System.String.Format("{0} used skill on {1}. Healed: {2:0.#}", this.source.GetComponent<Character>().characterName, this.characterName, healValue));
+            consoleInfo.GetComponent<Console>().AddMessage(System.String.Format("{0} used skill on {1}. Healed: {2:0.#}", source.GetComponent<Character>().characterName, this.characterName, healValue));
         }
     }
 
     public void TakingItem(int itemType, int itemStrength, System.String itemName, GameObject source) {
-        // Attacker
+        // Remebering the attacker
         this.source = source;
 
         if (itemType != HEAL) {
-            // Checking advantage or disvantages
-            if (elementResist[itemType - 1] == 0)
-                itemStrength *= 2;
-            else if (elementResist[itemType - 1] == 2)
-                itemStrength /= 2;
+            float damage;
 
-            // Damage calculation
-            float damage = CalculateDamage(itemStrength, this.resistance);
+            // Initial damage
+            damage = CalculateDamage(itemStrength, this.resistance);
+            // Element influence
+            damage *= ElementalMultiplier(itemType - 1);
+            // Defending influence
+            damage *= DefendingMultiplier();
+            // Random influence
+            damage *= RandomMultiplier();
+
+            // Subtract from life
             hp_current -= damage;
-
-            // Damage animation
-            damageAnimationTimeout = 1.0f;
-            damageAnimation = true;
-
             // Validation if still have HP
-            if (hp_current <= 0) {
+            if (hp_current <= 0)
+            {
                 damage += (int)hp_current;
                 hp_current = 0;
                 unconsciousAnimation = true;
                 fighting = false;
             }
-
+            // Update GUI
             Update_HP_MP();
+
+            // Damage animation
+            damageAnimationTimeout = 1.0f;
+            damageAnimation = true;
 
             // Updating team's Fitness - DAMAGE Dealed
             Character sourceScript = source.GetComponent<Character>();
@@ -549,17 +584,17 @@ public class Character : MonoBehaviour {
                 (sourceScript.leftTeam != this.leftTeam ? !fighting : false), sourceScript.leftTeam == this.leftTeam); // only give defeat bonus if is an enemy
 
             // Printing on Console
-            consoleInfo.GetComponent<Console>().AddMessage(System.String.Format("{0} used {1} on {2}. Damage: {3:0.#}", this.source.GetComponent<Character>().characterName, itemName, this.characterName, damage));
+            consoleInfo.GetComponent<Console>().AddMessage(System.String.Format("{0} used {1} on {2}. Damage: {3:0.#}", source.GetComponent<Character>().characterName, itemName, this.characterName, damage));
         }
         else { // Healing item
             float healValue = (itemStrength < hp_max - hp_current) ? itemStrength : (hp_max - hp_current);
             hp_current += healValue;
+            // Update GUI
+            Update_HP_MP();
 
             // Healing animation
             damageAnimationTimeout = 1.0f;
             healingAnimation = true;
-
-            Update_HP_MP();
 
             // Updating team's Fitness - HEALING
             Character sourceScript = source.GetComponent<Character>();
@@ -568,7 +603,7 @@ public class Character : MonoBehaviour {
                 false, sourceScript.leftTeam != this.leftTeam);
 
             // Printing on Console
-            consoleInfo.GetComponent<Console>().AddMessage(System.String.Format("{0} used {1} on {2}. Healed: {3:0.#}", this.source.GetComponent<Character>().characterName, itemName, this.characterName, healValue));
+            consoleInfo.GetComponent<Console>().AddMessage(System.String.Format("{0} used {1} on {2}. Healed: {3:0.#}", source.GetComponent<Character>().characterName, itemName, this.characterName, healValue));
         }
     }
 
