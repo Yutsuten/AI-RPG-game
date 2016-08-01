@@ -263,7 +263,7 @@ public class TurnManager : MonoBehaviour {
             if (character[i].OnGame()) { // Only calculate if is alive
                 // Setting input on the Neural Network
                 bool successInput;
-                successInput = neuralNetwork.SetInputArray(character[i].HpLost(), character[i].MpLost(), character[i].attack, character[i].defense, character[i].magicPower, character[i].resistance, character[i].speed, character[i].elementResist, membersData[0].member.MpLost(), membersData[0].member.attack, membersData[0].member.magicPower, membersData[0].member.speed, membersData[0].member.weakSkill, membersData[0].member.strongSkill, membersData[0].member.ItemAvailable(PHYSICAL_DAMAGE), membersData[0].member.ItemAvailable(WATER_DAMAGE), membersData[0].member.ItemAvailable(FIRE_DAMAGE), membersData[0].member.ItemAvailable(EARTH_DAMAGE), membersData[0].member.ItemAvailable(WIND_DAMAGE), membersData[0].member.ItemAvailable(HEAL), membersData[0].member.leftTeam != character[i].leftTeam);
+                successInput = neuralNetwork.SetInputArray(character[i].HpLost(), character[i].MpLost(), character[i].attack, character[i].defense, character[i].magicPower, character[i].resistance, character[i].speed, character[i].IsDefending(), character[i].elementResist, membersData[0].member.attack, membersData[0].member.magicPower, membersData[0].member.speed, membersData[0].member.weakSkill, membersData[0].member.strongSkill, membersData[0].member.leftTeam != character[i].leftTeam);
 
                 if (!successInput)
                     print("Input failed");

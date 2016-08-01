@@ -280,6 +280,11 @@ public class Character : MonoBehaviour {
         return mp_max - mp_current;
     }
 
+    public bool IsDefending()
+    {
+        return command == DEFENDING;
+    }
+
     public bool MyTurn(GameObject target, int command, int subCommand) {
         // Verify if have enough MP
         if (command == USING_SKILL) {

@@ -6,7 +6,7 @@ using System.IO;
 public class GeneticAlgorithm : MonoBehaviour {
 
     // Constant values
-    private const int NUMBER_INPUTS = 33;
+    private const int NUMBER_INPUTS = 27;
     private const int NUMBER_OUTPUTS = 12;
 
     private const int POPULATION_SIZE = 40;
