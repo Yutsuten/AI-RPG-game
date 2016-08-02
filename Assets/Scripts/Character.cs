@@ -487,7 +487,7 @@ public class Character : MonoBehaviour {
             float damage;
 
             // Initial damage
-            damage = CalculateDamage(magicValue, this.resistance);
+            damage = CalculateDamage(magicValue, (element == 0) ? this.defense : this.resistance); // 0 Physical skill, 1 or more Elemental skill
             // Skill used influence
             damage *= SkillMultiplier(subCommand);
             // Element influence
@@ -552,7 +552,7 @@ public class Character : MonoBehaviour {
             float damage;
 
             // Initial damage
-            damage = CalculateDamage(itemStrength, this.resistance);
+            damage = CalculateDamage(itemStrength, (itemType == PHYSICAL_DAMAGE) ? this.defense : this.resistance);
             // Element influence
             damage *= ElementalMultiplier(itemType - 1);
             // Defending influence
