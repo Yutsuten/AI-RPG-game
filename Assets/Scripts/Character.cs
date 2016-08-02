@@ -442,7 +442,7 @@ public class Character : MonoBehaviour {
         // Initial damage
         damage = CalculateDamage(atkValue, this.defense);
         // Element influence
-        damage *= ElementalMultiplier(PHYSICAL_DAMAGE);
+        damage *= ElementalMultiplier(0);
         // Defending influence
         damage *= DefendingMultiplier();
         // Random influence
@@ -488,14 +488,19 @@ public class Character : MonoBehaviour {
 
             // Initial damage
             damage = CalculateDamage(magicValue, (element == 0) ? this.defense : this.resistance); // 0 Physical skill, 1 or more Elemental skill
+            //print("Raw damage: " + damage);
             // Skill used influence
             damage *= SkillMultiplier(subCommand);
+            //print("Damage after skill multiplier: " + damage);
             // Element influence
             damage *= ElementalMultiplier(element);
+            //print("Damage after elemental influence: " + damage);
             // Defending influence
             damage *= DefendingMultiplier();
+            //print("Damage after defending influence: " + damage);
             // Random influence
             damage *= RandomMultiplier();
+            //print("Damage after random influence: " + damage);
 
             // Subtract from life
             hp_current -= damage;
