@@ -236,9 +236,10 @@ public class GeneticAlgorithm : MonoBehaviour {
                 biggestFitness = gamePopulation[i].fitness;
             sumFitness += gamePopulation[i].fitness;
         }
-        System.String saveInfo = System.String.Concat("Generation ", generation) + System.Environment.NewLine +
+        /*System.String saveInfo = System.String.Concat("Generation ", generation) + System.Environment.NewLine +
                                        System.String.Format("Smallest fitness: {0:0.00}; Biggest fitness: {1:0.00}", smallestFitness, biggestFitness) + System.Environment.NewLine +
-                                       System.String.Format("Mean fitness: {0:0.00}", sumFitness / POPULATION_SIZE) + System.Environment.NewLine;
+                                       System.String.Format("Mean fitness: {0:0.00}", sumFitness / POPULATION_SIZE) + System.Environment.NewLine;*/
+        System.String saveInfo = System.String.Concat(generation, "\t", smallestFitness, "\t", sumFitness / POPULATION_SIZE, "\t", biggestFitness);
 
         print(saveInfo);
         using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"Assets\SavedData\generationsInfo.txt", true)) {

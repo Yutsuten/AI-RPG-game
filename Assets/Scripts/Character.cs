@@ -291,19 +291,19 @@ public class Character : MonoBehaviour {
             switch (subCommand) {
                 case WEAK_SKILL:
                     if (mp_current < MP_WEAK_SKILL) {
-                        //print("Dont have enough mana for WEAK SKILL");
+                        print("Dont have enough mana for WEAK SKILL");
                         return false;
                     }
                     break;
                 case STRONG_SKILL:
                     if (mp_current < MP_STRONG_SKILL) {
-                        //print("Dont have enough mana for STRONG SKILL");
+                        print("Dont have enough mana for STRONG SKILL");
                         return false;
                     }
                     break;
                 case HEALING_SKILL:
                     if (mp_current < MP_HEALING_SKILL) {
-                        //print("Dont have enough mana for HEALING SKILL");
+                        print("Dont have enough mana for HEALING SKILL");
                         return false;
                     }
                     break;
@@ -311,7 +311,7 @@ public class Character : MonoBehaviour {
         } // Verify if have enough items
         else if (command == USING_ITEM) {
             if (inventory.ItemQuantity(subCommand) == 0) {
-                //print("Dont have enough ITEMs");
+                print("Dont have enough items");
                 return false;
             }
         }
@@ -343,6 +343,7 @@ public class Character : MonoBehaviour {
     }
 
     private void FinishedTurn() {
+        //print("Finished turn, looking for the next.");
         turnManager.SearchNext();
     }
 
@@ -361,7 +362,7 @@ public class Character : MonoBehaviour {
         // Attacking the target
         Character targetInfo = turnTarget.GetComponent<Character>();
         //print(this.gameObject + " attacking");
-        targetInfo.TakingSkill(this.magicPower, this.weakSkill, this.subCommand, this.gameObject);
+        targetInfo.TakingSkill(this.magicPower, (this.subCommand == WEAK_SKILL) ? this.weakSkill : this.strongSkill, this.subCommand, this.gameObject);
         
         // Removing MP
         if (subCommand == WEAK_SKILL) {
@@ -493,6 +494,7 @@ public class Character : MonoBehaviour {
             damage *= SkillMultiplier(subCommand);
             //print("Damage after skill multiplier: " + damage);
             // Element influence
+            //print("Attack Element: " + element + " - Resist value: " + elementResist[element] + " - Subcommand: " + subCommand);
             damage *= ElementalMultiplier(element);
             //print("Damage after elemental influence: " + damage);
             // Defending influence

@@ -211,6 +211,9 @@ public class TurnManager : MonoBehaviour {
     }
 
     public void SearchNext() {
+        //print("Looking for next character to give a turn.");
+        if (!membersData[0].member.OnGame())
+            membersData[0].turnData = 0;
         while (membersData[0].turnData < 1000) { // Checking until someone have enough turnTiming
 
             // Running one time the UpdateTurn of the characters
@@ -224,6 +227,7 @@ public class TurnManager : MonoBehaviour {
 
         };
 
+        //print("Checking if there is a valid target.");
         // Checking if there is a valid target
         if (!membersData[0].member.targets[0].GetComponent<Character>().OnGame() &&
                 !membersData[0].member.targets[1].GetComponent<Character>().OnGame() &&
@@ -251,6 +255,7 @@ public class TurnManager : MonoBehaviour {
 
         successfullCommand = false;
 
+        //print("Running Neural Network.");
         //print(membersData[0].member.characterName + " will try the Neural Network.");
         // Setting the weights of the Neural Network with the character's team
         neuralNetwork = membersData[0].member.leftTeam ? leftTeamNeuralNetwork : rightTeamNeuralNetwork;
@@ -258,6 +263,7 @@ public class TurnManager : MonoBehaviour {
         // Reseting the structure that can sort the values of the output
         targetCommandResult.Clear();
 
+        //print("Adding the NN output to a usable structure.");
         // Running the Neural Network and get the data about what to do
         for (int i = 0; i < NUMBER_OF_CHARACTERS; i++) {
             if (character[i].OnGame()) { // Only calculate if is alive
@@ -300,6 +306,7 @@ public class TurnManager : MonoBehaviour {
             print(i + " option: " + );
         }*/
 
+        //print("Running the command with higest priority.");
         do {
             indexBiggestProbability++;
             // for testing :3
