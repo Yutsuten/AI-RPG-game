@@ -64,7 +64,7 @@ public class GeneticAlgorithm : MonoBehaviour {
 
     void Update() {
         if (Input.GetMouseButtonDown(0)) {
-            gameSpeed = (gameSpeed == 1.0f) ? 10.0f : 1.0f;
+            gameSpeed = (gameSpeed == 4.0f) ? 100.0f : 4.0f;
             Time.timeScale = gameSpeed;
         }
     }
