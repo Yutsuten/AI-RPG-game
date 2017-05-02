@@ -242,8 +242,8 @@ The AI was done using concepts of Artificial Neural Networks and Genetic Algorit
 During the game, each team has an Artificial Intelligence that symbolizes the player who controls them.
 
 ## Neural network implemented
-The implemented Artificial Neural Network has 27 neurons in the input layer and 12 neurons in the output layer.
-The RNA is responsible for deciding who will be the target of the character that received the turn.
+The implemented Artificial Neural Network (ANN) has 27 neurons in the input layer and 12 neurons in the output layer.
+The ANN is responsible for deciding who will be the target of the character that received the turn.
 
 In the neurons of the input layer, the offensive attributes of the attacker,
 all attributes of the possible target
@@ -254,8 +254,8 @@ and some context information, as if the target is an enemy and if he is defendin
 In the output layer, the result is the priority that the character will become the target and the priority to use each command.
 
 ## Genetic Algorithm
-The genetic algorithm used to train the RNA has 40 individuals,
-each one has the matrix of RNA weights of a team.
+The genetic algorithm used to train the ANN has 40 individuals,
+each one has the matrix of ANN weights of a team.
 The flow of the algorithm developed is:
 
 ![AlgoritmoGenetico](images/en/GeneticAlgorithmFlow.png)
@@ -325,7 +325,7 @@ DEFと同等ですが、HPに与えられる魔法のダメージを軽減しま
 それぞれのキャラクターは、弱い、中立的、または強いタイプのダメージに抵抗を持っています。
 
 ## ダメージ計算
-物理的ダメージは次の式で計算されます。
+物理的ダメージは次の式で計算されます：
 
 ![FormulaDanoFisico](images/en/DanoFisico.png)
 
@@ -338,27 +338,33 @@ DEFと同等ですが、HPに与えられる魔法のダメージを軽減しま
 4つの基本コマンドのうち、1つを選択出来ます：
 攻撃、防御、スキル、アイテムです。
 
-**攻撃** は最も簡単なコマンドです。
+**攻撃**
+は最も簡単なコマンドです。
 MPを消費せず、少し物理的なダメージを与えます。
 
-**防御** は受けるダメージを減らすコマンドです。
+**防御**
+は受けるダメージを減らすコマンドです。
 ダメージ計算後、キャラクターが防御しているかどうかがチェックされます。
 防御している場合、ダメージは50％軽減します。
 
-**スキル** is a command that has 3 subcommands,
-each one representing a different skill:
-- **弱いスキル** is an ability that can cause both physical and magical damage,
-consumes 50 MP, and after damage calculations, the damage value is increased by 50%.
-- **強いスキル** is similar to the weak skill, but it consumes 110 MP and causes a 100% damage increase.
-- **ヒーリングスキル** is a skill that allows to recover the HP of the target.
-Because it is a supporting ability, target RES is ignored, and a healing value equivalent to 50% of the MAG from the character using the skill is applied.
+**スキル**
+は3つのサブコマンドを持つコマンドです。
+- **弱いスキル**
+は物理的および魔法的なダメージの両方を引き起こす可能性のある能力であり、
+50 MPを消費し、ダメージ計算後にダメージ値が50％増加します。
+- **強いスキル**
+は弱いスキルに似ていますが、110 MPを消費し、100％ダメージを増加させます。
+- **ヒーリングスキル**
+はターゲットのHPを回復させるスキルです。
+支援スキルであるため、ターゲットのRESは無視され、スキルを使用するキャラクタは50％のMAGから治癒します。
 
-**アイテム** is a command that allows using consumable items during battle.
-There are 6 different items, one is Potion and the other 5 are offensive, one for each type of damage in the game.
-The potion has a constant healing value, and the others have an attack value similar to ATK or MAG.
+**アイテム**
+は戦闘中に消耗アイテムを使用できるようにするコマンドです。
+6つのアイテムがあります。1つは回復薬、他の5つは攻撃的で、それぞれゲームに存在するタイプのダメージです。
+回復薬は一定の治癒値を持ち、他のものは攻撃がATKまたはMAGの値に似ています。
 
-## Characters Attributes
-| Parameter  | Tanker | Warrior | Mage |
+## キャラクターの属性
+| 属性  | タンカー | 戦士 | 魔道士 |
 | :---: | :---: | :---: | :---: |
 | **HP Max** | 750 | 500 | 400 |
 | **MP Max** | 350 | 550 | 800 |
@@ -367,51 +373,51 @@ The potion has a constant healing value, and the others have an attack value sim
 | **MAG** | 200 | 250 | 510 |
 | **RES** | 400 | 210 | 450 |
 | **SPD** | 82 | 98 | 79 |
-| **Physical Defense** | High | High | Normal |
-| **Water Defense** | Normal | Low | High |
-| **Fire Defense** | High | Normal | Normal |
-| **Earth Defense** | Normal | Normal | High |
-| **Wind Defense** | High | Normal | High |
-| **Weak Skill** | Earth | Physical | Water |
-| **Strong Skill** | Physical | Fire | Wind |
+| **物理防御力** | 高 | 高 | 中 |
+| **水の防御力** | 中 | 低 | 高 |
+| **火の防御力** | 高 | 中 | 中 |
+| **土の防御力** | 中 | 中 | 高 |
+| **風の防御力** | 高 | 中 | 高 |
+| **弱いスキル** | 土 | 物理 | 水 |
+| **強いスキル** | 物理 | 火 | 風 |
 
 # 人工知能について
-The AI was done using concepts of Artificial Neural Networks and Genetic Algorithm.
-During the game, each team has an Artificial Intelligence that symbolizes the player who controls them.
+人工知能はニューラルネットワークと遺伝的アルゴリズムの概念が使われました。
+ゲーム中、各チームは制御する人工知能があり、それらはプレイヤーを象徴します。
 
-## Neural network implemented
-The implemented Artificial Neural Network has 27 neurons in the input layer and 12 neurons in the output layer.
-The RNA is responsible for deciding who will be the target of the character that received the turn.
+## ニューラルネットワークの実装
+実装されたニューラルネットワークは、入力層に27個のニューロンを有し、出力層に12個のニューロンを有します。
+ニューラルネットワークは、ターンを受け取ったキャラクターの標的となる人物を決定する責任があります。
 
-In the neurons of the input layer, the offensive attributes of the attacker,
-all attributes of the possible target
-and some context information, as if the target is an enemy and if he is defending himself, are used.
+入力層のニューロンでは、ターンを受け取ったキャラクターの攻撃的な属性、
+ターゲットのすべての属性、
+標的が敵であるかどうか、標的が防御中かどうか、このようなコンテキスト情報も使用されています。
 
 ![RedeNeural](images/en/NeuralNetwork.png)
 
-In the output layer, the result is the priority that the character will become the target and the priority to use each command.
+出力レイヤーでは、結果がキャラクターがターゲットになる優先度と各コマンドを使用する優先度になります。
 
-## Genetic Algorithm
-The genetic algorithm used to train the RNA has 40 individuals,
-each one has the matrix of RNA weights of a team.
-The flow of the algorithm developed is:
+## 遺伝的アルゴリズム
+ニューラルネットワークを訓練するために使用される遺伝的アルゴリズムは40人の個体を有し、
+それぞれにチームのニューラルネットワークの重みの行列があります。
+開発されたアルゴリズムの流れは次のイメージに表します。
 
 ![AlgoritmoGenetico](images/en/GeneticAlgorithmFlow.png)
 
-During the evaluation, the character's command is evaluated and results in a score.
-A command executed correctly, ie enemy attack or ally heal, results in a positive score.
-A command executed incorrectly, ie ally attack or enemy heal, results in a negative score.
-After all commands, this score is added to the team's fitness.
+評価中、キャラクターのコマンドが評価され、結果がスコアになります。
+正常に実行されたコマンド、すなわち敵に攻撃し、または味方に治療しはポジティブなスコアになります。
+誤って実行されたコマンド、すなわち味方に攻撃し、または敵に治療しはネガティブなスコアになります。
+コマンドの後、このスコアはチームのフィットネスに追加されます。
 
-The fitness values when the battle ends are eventually used in the selection phase,
-and those with greater fitness are more likely to be selected.
+戦闘が終了したときのフィットネスは選択段階で使用され、
+より大きなフィットネスを有するものが選択される可能性が高くなります。
 
-And then, through the crossover and mutation, an improved population is created, with better performance to battle and defeat the enemy team.
+そして、クロスオーバーと突然変異によって、より良い成績できる人口が産まれます。この新たな人工では前より戦いパフォーマンスが上がります。
 
 # 結果
-After training the Artificial Intelligence during 50 generations,
-it was noticed that the characters learned to improve their performance with success,
-and with significant improvements in the early generations.
+50代の人工知能を訓練した後、
+キャラクター達は戦いパフォーマンスが向上し、
+特に初期の世代で大幅な改善が見られました。
 
 ![Resultado](images/en/AI-Result.png)
 
