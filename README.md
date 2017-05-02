@@ -141,12 +141,6 @@ e com melhoras significativas nas primeiras gerações.
 # Vídeo
 [![TCC - AI of RPG game: Youtube video](http://img.youtube.com/vi/blHZ4aY4BNU/0.jpg)](https://www.youtube.com/watch?v=blHZ4aY4BNU "TCC - AI of RPG game")
 
-# AI RPG Game
-The creation of an application of Artificial Intelligence in a turn-based RPG game.
-
-[Click here](https://github.com/mateus-etto/Monografia-IAJogoRPG/releases) for the monograph (in Portuguese).
-Please check de video below to see the implementation result.
-
 ---
 
 # Index
@@ -240,8 +234,8 @@ The potion has a constant healing value, and the others have an attack value sim
 | **Fire Defense** | High | Normal | Normal |
 | **Earth Defense** | Normal | Normal | High |
 | **Wind Defense** | High | Normal | High |
-| **Weak Skill** | Terra | Física | Water |
-| **Strong Skill** | Física | Fogo | Wind |
+| **Weak Skill** | Earth | Physical | Water |
+| **Strong Skill** | Physical | Fire | Wind |
 
 # About the AI
 The AI was done using concepts of Artificial Neural Networks and Genetic Algorithm.
@@ -284,4 +278,142 @@ and with significant improvements in the early generations.
 ![Resultado](images/en/AI-Result.png)
 
 # Video
+[![TCC - AI of RPG game: Youtube video](http://img.youtube.com/vi/blHZ4aY4BNU/0.jpg)](https://www.youtube.com/watch?v=blHZ4aY4BNU "TCC - AI of RPG game")
+
+
+---
+
+# 目次
+1. [ゲームについて](#ゲームについて)
+2. [人工知能について](#人工知能について)
+3. [結果](#結果)
+4. [ビデオ](#ビデオ)
+
+# ゲームについて
+完全な説明については[ここにクリックして](https://github.com/mateus-etto/Monografia-IAJogoRPG/releases)、学術論文が読めます（ポルトガル語）。
+
+このプロジェクトでは、ターン性RPGゲームでキャラクターをコントロールする人工知能が作成されました。
+目的はできるだけ早く敵チームを倒すことです。その為、キャラクターは訓練します。
+
+## 属性
+ゲームの各キャラクターは次の属性で実装されました：
+
+**HP (体力):**
+キャラクターが気絶するまでどれくらいのダメージが受けられます。
+
+**MP (魔力):**
+スキルを使用するときに消費されます。
+
+**ATK (攻撃力):**
+攻撃力が高いほど、物理的なダメージが大きくなります。
+
+**DEF (防御力):**
+高い防御力は、HPに与えられる物理的なダメージを軽減します。
+
+**MAG (魔法力):**
+ATKに等しいが、魔法のダメージを与える。
+
+**RES (抵抗力):**
+DEFと同等ですが、HPに与えられる魔法のダメージを軽減します。
+
+**SPD (速度):**
+速度の値が高いと、より短い時間でより多くのコマンドを実行出来ます。
+
+## ダメージの種類
+物理と魔法の2種類のダメージがあります。
+魔法のダメージは水、火、土、風のタイプがあります。
+それぞれのキャラクターは、弱い、中立的、または強いタイプのダメージに抵抗を持っています。
+
+## ダメージ計算
+物理的ダメージは次の式で計算されます。
+
+![FormulaDanoFisico](images/en/DanoFisico.png)
+
+魔法ダメージは次の式で計算されます：
+
+![FormulaDanoMagico](images/en/DanoMagico.png)
+
+## コマンド
+キャラクターがターンを受信すると、
+4つの基本コマンドのうち、1つを選択出来ます：
+攻撃、防御、スキル、アイテムです。
+
+**攻撃** は最も簡単なコマンドです。
+MPを消費せず、少し物理的なダメージを与えます。
+
+**防御** は受けるダメージを減らすコマンドです。
+ダメージ計算後、キャラクターが防御しているかどうかがチェックされます。
+防御している場合、ダメージは50％軽減します。
+
+**スキル** is a command that has 3 subcommands,
+each one representing a different skill:
+- **弱いスキル** is an ability that can cause both physical and magical damage,
+consumes 50 MP, and after damage calculations, the damage value is increased by 50%.
+- **強いスキル** is similar to the weak skill, but it consumes 110 MP and causes a 100% damage increase.
+- **ヒーリングスキル** is a skill that allows to recover the HP of the target.
+Because it is a supporting ability, target RES is ignored, and a healing value equivalent to 50% of the MAG from the character using the skill is applied.
+
+**アイテム** is a command that allows using consumable items during battle.
+There are 6 different items, one is Potion and the other 5 are offensive, one for each type of damage in the game.
+The potion has a constant healing value, and the others have an attack value similar to ATK or MAG.
+
+## Characters Attributes
+| Parameter  | Tanker | Warrior | Mage |
+| :---: | :---: | :---: | :---: |
+| **HP Max** | 750 | 500 | 400 |
+| **MP Max** | 350 | 550 | 800 |
+| **ATK** | 250 | 475 | 200 |
+| **DEF** | 500 | 425 | 215 |
+| **MAG** | 200 | 250 | 510 |
+| **RES** | 400 | 210 | 450 |
+| **SPD** | 82 | 98 | 79 |
+| **Physical Defense** | High | High | Normal |
+| **Water Defense** | Normal | Low | High |
+| **Fire Defense** | High | Normal | Normal |
+| **Earth Defense** | Normal | Normal | High |
+| **Wind Defense** | High | Normal | High |
+| **Weak Skill** | Earth | Physical | Water |
+| **Strong Skill** | Physical | Fire | Wind |
+
+# 人工知能について
+The AI was done using concepts of Artificial Neural Networks and Genetic Algorithm.
+During the game, each team has an Artificial Intelligence that symbolizes the player who controls them.
+
+## Neural network implemented
+The implemented Artificial Neural Network has 27 neurons in the input layer and 12 neurons in the output layer.
+The RNA is responsible for deciding who will be the target of the character that received the turn.
+
+In the neurons of the input layer, the offensive attributes of the attacker,
+all attributes of the possible target
+and some context information, as if the target is an enemy and if he is defending himself, are used.
+
+![RedeNeural](images/en/NeuralNetwork.png)
+
+In the output layer, the result is the priority that the character will become the target and the priority to use each command.
+
+## Genetic Algorithm
+The genetic algorithm used to train the RNA has 40 individuals,
+each one has the matrix of RNA weights of a team.
+The flow of the algorithm developed is:
+
+![AlgoritmoGenetico](images/en/GeneticAlgorithmFlow.png)
+
+During the evaluation, the character's command is evaluated and results in a score.
+A command executed correctly, ie enemy attack or ally heal, results in a positive score.
+A command executed incorrectly, ie ally attack or enemy heal, results in a negative score.
+After all commands, this score is added to the team's fitness.
+
+The fitness values when the battle ends are eventually used in the selection phase,
+and those with greater fitness are more likely to be selected.
+
+And then, through the crossover and mutation, an improved population is created, with better performance to battle and defeat the enemy team.
+
+# 結果
+After training the Artificial Intelligence during 50 generations,
+it was noticed that the characters learned to improve their performance with success,
+and with significant improvements in the early generations.
+
+![Resultado](images/en/AI-Result.png)
+
+# ビデオ
 [![TCC - AI of RPG game: Youtube video](http://img.youtube.com/vi/blHZ4aY4BNU/0.jpg)](https://www.youtube.com/watch?v=blHZ4aY4BNU "TCC - AI of RPG game")
