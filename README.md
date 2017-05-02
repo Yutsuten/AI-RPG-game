@@ -95,8 +95,8 @@ A poção tem valor constante de cura, e os outros tem um valor de "ataque" seme
 | **Defesa de Fogo** | Alta | Normal | Normal |
 | **Defesa de Terra** | Normal | Normal | Alta |
 | **Defesa de Vento** | Alta | Normal | Alta |
-| **Hab. Fraca** | Terra | Física | Alta |
-| **Hab. Forte** | Física | Fogo | Alta |
+| **Hab. Fraca** | Terra | Física | Água |
+| **Hab. Forte** | Física | Fogo | Vento |
 
 # Sobre a IA
 A IA foi feita com conceitos de Redes Neurais Artificiais e Algoritmo Genético.
@@ -109,7 +109,6 @@ A RNA é responsável pela decisão de quem será o alvo do personagem que receb
 Nos neurônios da camada de entrada, são usados os atributos ofensivos do atacante,
 todos os atributos do possível alvo
 e algumas informações de contexto, como se o alvo é inimigo e se ele está se defendendo.
-A RNA é executada usando atributos do personagem que recebeu turno e dos possíveis alvos, um de cada vez.
 
 ![RedeNeural](images/pt-BR/NeuralNetwork.png)
 
@@ -147,3 +146,142 @@ The creation of an application of Artificial Intelligence in a turn-based RPG ga
 
 [Click here](https://github.com/mateus-etto/Monografia-IAJogoRPG/releases) for the monograph (in Portuguese).
 Please check de video below to see the implementation result.
+
+---
+
+# Index
+1. [About the game](#about-the-game)
+2. [About the AI](#about-the-ai)
+3. [Results](#results)
+4. [Video](#video)
+
+# About the game
+For the complete explanation, [click here](https://github.com/mateus-etto/Monografia-IAJogoRPG/releases) to read the monograph (in Portuguese).
+
+
+In this project was created an Artificial Intelligence that controls characters in a turn-based RPG game.
+The objective is to train the characters so they are able to defeat enemy team as soon as possible.
+
+## Attributes
+Each character in the game was implemented with the following attributes:
+
+**HP (Health Points):**
+It's how much damage the character can take before being incapacitated.
+
+**MP (Magic Points):**
+It is consumed when using skills.
+
+**ATK (Attack):**
+A high attack value allows to inflict greater physical damage.
+
+**DEF (Defense):**
+A high defense value reduces the physical damage that will be inflicted on HP.
+
+**MAG (Magic):**
+Equivalent to ATK, but inflicting magical damage.
+
+**RES (Resistance):**
+Equivalent to DEF, but reducing magic damage that will be inflicted on HP.
+
+**SPD (Speed):**
+High values of speed allows to execute more commands in less time.
+
+## Types of damage
+There are two types of damage, the physical and the magical.
+Magic damages are elementals, being:
+water, fire, earth and wind.
+Each character can be weak, neutral or strong to some type of damage.
+
+## Damage calculations
+The physical damage is calculated by the following formula:
+
+![FormulaDanoFisico](images/en/DanoFisico.png)
+
+Magic damage is calculated by the following formula:
+
+![FormulaDanoMagico](images/en/DanoMagico.png)
+
+## Commands
+When a character receives a turn,
+it can choose one of 4 basic commands:
+Attack, Defend, Use Skill and Use Item.
+
+**Attack** is the simplest offensive command of all.
+It does not consume MP, and it causes a low physical damage.
+
+**Defend** is a defensive command that reduces damage to be taken.
+After all damage calculations, it is checked whether the character is defending.
+If it is, the damage is reduced by 50%.
+
+**Skill** is a command that has 3 subcommands,
+each one representing a different skill:
+- **Weak Skill** is an ability that can cause both physical and magical damage,
+consumes 50 MP, and after damage calculations, the damage value is increased by 50%.
+- **Strong Skill** is similar to the weak skill, but it consumes 110 MP and causes a 100% damage increase.
+- **Healing Skill** is a skill that allows to recover the HP of the target.
+Because it is a supporting ability, target RES is ignored, and a healing value equivalent to 50% of the MAG from the character using the skill is applied.
+
+**Item** is a command that allows using consumable items during battle.
+There are 6 different items, one is Potion and the other 5 are offensive, one for each type of damage in the game.
+The potion has a constant healing value, and the others have an attack value similar to ATK or MAG.
+
+## Characters Attributes
+| Parameter  | Tanker | Warrior | Mage |
+| :---: | :---: | :---: | :---: |
+| **HP Max** | 750 | 500 | 400 |
+| **MP Max** | 350 | 550 | 800 |
+| **ATK** | 250 | 475 | 200 |
+| **DEF** | 500 | 425 | 215 |
+| **MAG** | 200 | 250 | 510 |
+| **RES** | 400 | 210 | 450 |
+| **SPD** | 82 | 98 | 79 |
+| **Physical Defense** | High | High | Normal |
+| **Water Defense** | Normal | Low | High |
+| **Fire Defense** | High | Normal | Normal |
+| **Earth Defense** | Normal | Normal | High |
+| **Wind Defense** | High | Normal | High |
+| **Weak Skill** | Terra | Física | Water |
+| **Strong Skill** | Física | Fogo | Wind |
+
+# About the AI
+The AI was done using concepts of Artificial Neural Networks and Genetic Algorithm.
+During the game, each team has an Artificial Intelligence that symbolizes the player who controls them.
+
+## Neural network implemented
+The implemented Artificial Neural Network has 27 neurons in the input layer and 12 neurons in the output layer.
+The RNA is responsible for deciding who will be the target of the character that received the turn.
+
+In the neurons of the input layer, the offensive attributes of the attacker,
+all attributes of the possible target
+and some context information, as if the target is an enemy and if he is defending himself, are used.
+
+![RedeNeural](images/en/NeuralNetwork.png)
+
+In the output layer, the result is the priority that the character will become the target and the priority to use each command.
+
+## Genetic Algorithm
+The genetic algorithm used to train the RNA has 40 individuals,
+each one has the matrix of RNA weights of a team.
+The flow of the algorithm developed is:
+
+![AlgoritmoGenetico](images/en/GeneticAlgorithmFlow.png)
+
+During the evaluation, the character's command is evaluated and results in a score.
+A command executed correctly, ie enemy attack or ally heal, results in a positive score.
+A command executed incorrectly, ie ally attack or enemy heal, results in a negative score.
+After all commands, this score is added to the team's fitness.
+
+The fitness values when the battle ends are eventually used in the selection phase,
+and those with greater fitness are more likely to be selected.
+
+And then, through the crossover and mutation, an improved population is created, with better performance to battle and defeat the enemy team.
+
+# Results
+After training the Artificial Intelligence during 50 generations,
+it was noticed that the characters learned to improve their performance with success,
+and with significant improvements in the early generations.
+
+![Resultado](images/en/AI-Result.png)
+
+# Video
+[![TCC - AI of RPG game: Youtube video](http://img.youtube.com/vi/blHZ4aY4BNU/0.jpg)](https://www.youtube.com/watch?v=blHZ4aY4BNU "TCC - AI of RPG game")
