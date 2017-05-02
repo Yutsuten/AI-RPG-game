@@ -8,8 +8,7 @@
 # Índice
 1. [Sobre o jogo](#sobre-o-jogo)
 2. [Sobre a IA](#sobre-a-ia)
-3. [Capturas de tela](#capturas-de-tela)
-4. [Vídeo](#vídeo)
+3. [Vídeo](#vídeo)
 
 
 # Sobre o jogo
@@ -17,6 +16,8 @@ Neste projeto foi criado uma Inteligência Artificial que controla personagens d
 O objetivo é que os personagens sejam capazes de derrotar o time inimigo o quanto antes.
 
 ## Atributos
+Cada personagem do jogo foi implementado com os seguintes atributos:
+
 **HP (Pontos de Vida):**
 É o quanto de dano o personagem pode receber antes de ser incapacitado.
 
@@ -40,7 +41,7 @@ Velocidade do personagem, e valores altos o permite executar mais comandos em me
 
 ## Tipos de danos
 Existem dois tipos de danos, o físico e o mágico.
-Danos mágicos são elementais, e são:
+Danos mágicos são elementais, sendo:
 água, fogo, terra e vento.
 Cada personagem pode ser fraco, neutro ou forte em relação em algum tipo de dano.
 
@@ -97,7 +98,7 @@ A poção tem valor constante de cura, e os outros tem um valor de "ataque" seme
 
 # Sobre a IA
 A IA foi feita com conceitos de Redes Neurais Artificiais e Algoritmo Genético.
-Durante o jogo, cada equipe possui uma inteligência artificial que simboliza o jogador que os controla.
+Durante o jogo, cada equipe possui uma Inteligência Artificial que simboliza o jogador que os controla.
 
 ## Rede neural implementada
 A Rede Neural Artificial implementada possui 27 neurônios na camada de entrada e 12 neurônios na camada de saída.
@@ -106,10 +107,11 @@ A RNA é responsável pela decisão de quem será o alvo do personagem que receb
 Nos neurônios da camada de entrada, são usados os atributos ofensivos do atacante,
 todos os atributos do possível alvo
 e algumas informações de contexto, como se o alvo é inimigo e se ele está se defendendo.
+A RNA é executada usando atributos do personagem que recebeu turno e dos possíveis alvos, um de cada vez.
 
 ![RedeNeural](images/NeuralNetwork.png)
 
-Na camada de saída, tem-se o resultado da probabilidade do alvo se tornar alvo e a probabilidade de cada comando.
+Na camada de saída, tem-se o resultado da probabilidade daquele personagem se tornar alvo e a probabilidade de cada comando.
 
 ## Algoritmo Genético
 O algoritmo genético utilizado para treinar a RNA possui 40 indivíduos,
@@ -126,9 +128,14 @@ Em todos os comandos este valor é somado ao fitness da equipe.
 Os valores de fitness quando a batalha acaba são eventualmente usados na seleção,
 tendo maior probabilidade de ser selecionado com um maior fitness.
 
-## Ciclo do jogo e das gerações.
+E então através do crossover e mutação é criado uma população melhorada, com um desempenho melhor para batalhar e derrotar a equipe inimiga.
 
-# Capturas de tela
+# Resultados
+Após um treinamento de 50 gerações da Inteligência Artificial,
+percebeu-se que os personagens aprenderam a melhorar sua performance com sucesso,
+e com melhoras significativas nas primeiras gerações.
+
+![Resultado](images/AI-Result.png)
 
 # Vídeo
 [![TCC - AI of RPG game: Youtube video](http://img.youtube.com/vi/blHZ4aY4BNU/0.jpg)](https://www.youtube.com/watch?v=blHZ4aY4BNU "TCC - AI of RPG game")
