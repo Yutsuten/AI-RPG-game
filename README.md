@@ -8,10 +8,12 @@
 # Índice
 1. [Sobre o jogo](#sobre-o-jogo)
 2. [Sobre a IA](#sobre-a-ia)
-3. [Vídeo](#vídeo)
-
+3. [Resultados](#resultados)
+4. [Vídeo](#vídeo)
 
 # Sobre o jogo
+Para a explicação completa, [clique aqui](https://github.com/mateus-etto/Monografia-IAJogoRPG/releases) para ler a monografia.
+
 Neste projeto foi criado uma Inteligência Artificial que controla personagens de um jogo RPG em turnos.
 O objetivo é que os personagens sejam capazes de derrotar o time inimigo o quanto antes.
 
@@ -48,11 +50,11 @@ Cada personagem pode ser fraco, neutro ou forte em relação em algum tipo de da
 ## Cálculos de danos
 O dano físico é calculado pela seguinte fórmula:
 
-![FormulaDanoFisico](images/DanoFisico.png)
+![FormulaDanoFisico](images/pt-BR/DanoFisico.png)
 
 O dano mágico é calculado pela seguinte fórmula:
 
-![FormulaDanoMagico](images/DanoMagico.png)
+![FormulaDanoMagico](images/pt-BR/DanoMagico.png)
 
 ## Comandos
 Quando um personagem recebe um turno,
@@ -109,7 +111,7 @@ todos os atributos do possível alvo
 e algumas informações de contexto, como se o alvo é inimigo e se ele está se defendendo.
 A RNA é executada usando atributos do personagem que recebeu turno e dos possíveis alvos, um de cada vez.
 
-![RedeNeural](images/NeuralNetwork.png)
+![RedeNeural](images/pt-BR/NeuralNetwork.png)
 
 Na camada de saída, tem-se o resultado da probabilidade daquele personagem se tornar alvo e a probabilidade de cada comando.
 
@@ -118,7 +120,7 @@ O algoritmo genético utilizado para treinar a RNA possui 40 indivíduos,
 sendo que cada um possui a matriz de pesos da RNA de uma equipe.
 O ciclo do algorítmo desenvolvido é:
 
-![AlgoritmoGenetico](images/GeneticAlgorithmFlow.png)
+![AlgoritmoGenetico](images/pt-BR/GeneticAlgorithmFlow.png)
 
 Durante a avaliação, o comando do personagem é avaliado e resulta em uma nota.
 Um comando executado corretamente, ou seja, ataque em inimigo ou cura em aliado, resulta em nota positiva.
@@ -135,7 +137,7 @@ Após um treinamento de 50 gerações da Inteligência Artificial,
 percebeu-se que os personagens aprenderam a melhorar sua performance com sucesso,
 e com melhoras significativas nas primeiras gerações.
 
-![Resultado](images/AI-Result.png)
+![Resultado](images/pt-BR/AI-Result.png)
 
 # Vídeo
 [![TCC - AI of RPG game: Youtube video](http://img.youtube.com/vi/blHZ4aY4BNU/0.jpg)](https://www.youtube.com/watch?v=blHZ4aY4BNU "TCC - AI of RPG game")
