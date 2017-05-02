@@ -17,6 +17,8 @@ Para a explicação completa, [clique aqui](https://github.com/mateus-etto/Monog
 Neste projeto foi criado uma Inteligência Artificial que controla personagens de um jogo RPG em turnos.
 O objetivo é que os personagens sejam capazes de derrotar o time inimigo o quanto antes.
 
+[Voltar ao topo da página](#top)
+
 ## Atributos
 Cada personagem do jogo foi implementado com os seguintes atributos:
 
@@ -98,6 +100,8 @@ A poção tem valor constante de cura, e os outros tem um valor de "ataque" seme
 | **Hab. Fraca** | Terra | Física | Água |
 | **Hab. Forte** | Física | Fogo | Vento |
 
+[Voltar ao topo da página](#top)
+
 # Sobre a IA
 A IA foi feita com conceitos de Redes Neurais Artificiais e Algoritmo Genético.
 Durante o jogo, cada equipe possui uma Inteligência Artificial que simboliza o jogador que os controla.
@@ -131,6 +135,8 @@ tendo maior probabilidade de ser selecionado com um maior fitness.
 
 E então através do crossover e mutação é criado uma população melhorada, com um desempenho melhor para batalhar e derrotar a equipe inimiga.
 
+[Voltar ao topo da página](#top)
+
 # Resultados
 Após um treinamento de 50 gerações da Inteligência Artificial,
 percebeu-se que os personagens aprenderam a melhorar sua performance com sucesso,
@@ -138,8 +144,12 @@ e com melhoras significativas nas primeiras gerações.
 
 ![Resultado](images/pt-BR/AI-Result.png)
 
+[Voltar ao topo da página](#top)
+
 # Vídeo
 [![TCC - AI of RPG game: Youtube video](http://img.youtube.com/vi/blHZ4aY4BNU/0.jpg)](https://www.youtube.com/watch?v=blHZ4aY4BNU "TCC - AI of RPG game")
+
+[Voltar ao topo da página](#top)
 
 ---
 
@@ -152,9 +162,10 @@ e com melhoras significativas nas primeiras gerações.
 # About the game
 For the complete explanation, [click here](https://github.com/mateus-etto/Monografia-IAJogoRPG/releases) to read the monograph (in Portuguese).
 
-
 In this project was created an Artificial Intelligence that controls characters in a turn-based RPG game.
 The objective is to train the characters so they are able to defeat enemy team as soon as possible.
+
+[Back to top](#top)
 
 ## Attributes
 Each character in the game was implemented with the following attributes:
@@ -237,6 +248,8 @@ The potion has a constant healing value, and the others have an attack value sim
 | **Weak Skill** | Earth | Physical | Water |
 | **Strong Skill** | Physical | Fire | Wind |
 
+[Back to top](#top)
+
 # About the AI
 The AI was done using concepts of Artificial Neural Networks and Genetic Algorithm.
 During the game, each team has an Artificial Intelligence that symbolizes the player who controls them.
@@ -270,6 +283,8 @@ and those with greater fitness are more likely to be selected.
 
 And then, through the crossover and mutation, an improved population is created, with better performance to battle and defeat the enemy team.
 
+[Back to top](#top)
+
 # Results
 After training the Artificial Intelligence during 50 generations,
 it was noticed that the characters learned to improve their performance with success,
@@ -277,8 +292,12 @@ and with significant improvements in the early generations.
 
 ![Resultado](images/en/AI-Result.png)
 
+[Back to top](#top)
+
 # Video
 [![TCC - AI of RPG game: Youtube video](http://img.youtube.com/vi/blHZ4aY4BNU/0.jpg)](https://www.youtube.com/watch?v=blHZ4aY4BNU "TCC - AI of RPG game")
+
+[Back to top](#top)
 
 
 ---
@@ -294,6 +313,8 @@ and with significant improvements in the early generations.
 
 このプロジェクトでは、ターン性RPGゲームでキャラクターをコントロールする人工知能が作成されました。
 目的はできるだけ早く敵チームを倒すことです。その為、キャラクターは訓練します。
+
+[トップに戻る](#top)
 
 ## 属性
 ゲームの各キャラクターは次の属性で実装されました：
@@ -381,6 +402,8 @@ MPを消費せず、少し物理的なダメージを与えます。
 | **弱いスキル** | 土 | 物理 | 水 |
 | **強いスキル** | 物理 | 火 | 風 |
 
+[トップに戻る](#top)
+
 # 人工知能について
 人工知能はニューラルネットワークと遺伝的アルゴリズムの概念が使われました。
 ゲーム中、各チームは制御する人工知能があり、それらはプレイヤーを象徴します。
@@ -414,6 +437,8 @@ MPを消費せず、少し物理的なダメージを与えます。
 
 そして、クロスオーバーと突然変異によって、より良い成績できる人口が産まれます。この新たな人工では前より戦いパフォーマンスが上がります。
 
+[トップに戻る](#top)
+
 # 結果
 50代の人工知能を訓練した後、
 キャラクター達は戦いパフォーマンスが向上し、
@@ -421,5 +446,9 @@ MPを消費せず、少し物理的なダメージを与えます。
 
 ![Resultado](images/en/AI-Result.png)
 
+[トップに戻る](#top)
+
 # ビデオ
 [![TCC - AI of RPG game: Youtube video](http://img.youtube.com/vi/blHZ4aY4BNU/0.jpg)](https://www.youtube.com/watch?v=blHZ4aY4BNU "TCC - AI of RPG game")
+
+[トップに戻る](#top)
