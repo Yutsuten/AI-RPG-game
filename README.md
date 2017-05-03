@@ -11,7 +11,7 @@
 3. [Resultados](#resultados)
 4. [Vídeo](#vídeo)
 
-# Sobre o jogo
+## Sobre o jogo
 Para a explicação completa, [clique aqui](https://github.com/mateus-etto/Monografia-IAJogoRPG/releases) para ler a monografia.
 
 Neste projeto foi criado uma Inteligência Artificial que controla personagens de um jogo RPG em turnos.
@@ -19,7 +19,7 @@ O objetivo é que os personagens sejam capazes de derrotar o time inimigo o quan
 
 [Voltar ao topo da página](#top)
 
-## Atributos
+### Atributos
 Cada personagem do jogo foi implementado com os seguintes atributos:
 
 **HP (Pontos de Vida):**
@@ -43,13 +43,13 @@ Equivalente ao DEF, mas reduzindo danos mágicos que serão infligidos no HP.
 **SPD (Velocidade):**
 Velocidade do personagem, e valores altos o permite executar mais comandos em menos tempo.
 
-## Tipos de danos
+### Tipos de danos
 Existem dois tipos de danos, o físico e o mágico.
 Danos mágicos são elementais, sendo:
 água, fogo, terra e vento.
 Cada personagem pode ser fraco, neutro ou forte em relação em algum tipo de dano.
 
-## Cálculos de danos
+### Cálculos de danos
 O dano físico é calculado pela seguinte fórmula:
 
 ![FormulaDanoFisico](images/pt-BR/DanoFisico.png)
@@ -58,7 +58,7 @@ O dano mágico é calculado pela seguinte fórmula:
 
 ![FormulaDanoMagico](images/pt-BR/DanoMagico.png)
 
-## Comandos
+### Comandos
 Quando um personagem recebe um turno,
 ele pode escolher um entre 4 comandos básicos:
 Atacar, Defender, Usar Habilidade e Usar Item.
@@ -82,7 +82,7 @@ Por ser uma habilidade de suporte, a RES do alvo é ignorada, sendo aplicada uma
 Existem 6 itens diferentes, um é Poção e os outros 5 são ofensivos, um para cada tipo de dano existente no jogo.
 A poção tem valor constante de cura, e os outros tem um valor de "ataque" semelhante a ATK ou MAG, que é independente do personagem que irá usá-lo.
 
-## Atributos dos personagens
+### Atributos dos personagens
 | Parâmetro  | Tanker | Guerreiro | Mago |
 | :---: | :---: | :---: | :---: |
 | **HP Max** | 750 | 500 | 400 |
@@ -102,11 +102,11 @@ A poção tem valor constante de cura, e os outros tem um valor de "ataque" seme
 
 [Voltar ao topo da página](#top)
 
-# Sobre a IA
+## Sobre a IA
 A IA foi feita com conceitos de Redes Neurais Artificiais e Algoritmo Genético.
 Durante o jogo, cada equipe possui uma Inteligência Artificial que simboliza o jogador que os controla.
 
-## Rede neural implementada
+### Rede neural implementada
 A Rede Neural Artificial implementada possui 27 neurônios na camada de entrada e 12 neurônios na camada de saída.
 A RNA é responsável pela decisão de quem será o alvo do personagem que recebeu o turno.
 
@@ -118,7 +118,7 @@ e algumas informações de contexto, como se o alvo é inimigo e se ele está se
 
 Na camada de saída, tem-se o resultado da probabilidade daquele personagem se tornar alvo e a probabilidade de cada comando.
 
-## Algoritmo Genético
+### Algoritmo Genético
 O algoritmo genético utilizado para treinar a RNA possui 40 indivíduos,
 sendo que cada um possui a matriz de pesos da RNA de uma equipe.
 O ciclo do algorítmo desenvolvido é:
@@ -137,7 +137,7 @@ E então através do crossover e mutação é criado uma população melhorada, 
 
 [Voltar ao topo da página](#top)
 
-# Resultados
+## Resultados
 Após um treinamento de 50 gerações da Inteligência Artificial,
 percebeu-se que os personagens aprenderam a melhorar sua performance com sucesso,
 e com melhoras significativas nas primeiras gerações.
@@ -146,7 +146,7 @@ e com melhoras significativas nas primeiras gerações.
 
 [Voltar ao topo da página](#top)
 
-# Vídeo
+## Vídeo
 [![TCC - AI of RPG game: Youtube video](http://img.youtube.com/vi/blHZ4aY4BNU/0.jpg)](https://www.youtube.com/watch?v=blHZ4aY4BNU "TCC - AI of RPG game")
 
 [Voltar ao topo da página](#top)
@@ -159,7 +159,7 @@ e com melhoras significativas nas primeiras gerações.
 3. [Results](#results)
 4. [Video](#video)
 
-# About the game
+## About the game
 For the complete explanation, [click here](https://github.com/mateus-etto/Monografia-IAJogoRPG/releases) to read the monograph (in Portuguese).
 
 In this project was created an Artificial Intelligence that controls characters in a turn-based RPG game.
@@ -167,7 +167,7 @@ The objective is to train the characters so they are able to defeat enemy team a
 
 [Back to top](#top)
 
-## Attributes
+### Attributes
 Each character in the game was implemented with the following attributes:
 
 **HP (Health Points):**
@@ -191,13 +191,13 @@ Equivalent to DEF, but reducing magic damage that will be inflicted on HP.
 **SPD (Speed):**
 High values of speed allows to execute more commands in less time.
 
-## Types of damage
+### Types of damage
 There are two types of damage, the physical and the magical.
 Magic damages are elementals, being:
 water, fire, earth and wind.
 Each character can be weak, neutral or strong to some type of damage.
 
-## Damage calculations
+### Damage calculations
 The physical damage is calculated by the following formula:
 
 ![FormulaDanoFisico](images/en/DanoFisico.png)
@@ -206,7 +206,7 @@ Magic damage is calculated by the following formula:
 
 ![FormulaDanoMagico](images/en/DanoMagico.png)
 
-## Commands
+### Commands
 When a character receives a turn,
 it can choose one of 4 basic commands:
 Attack, Defend, Use Skill and Use Item.
@@ -230,7 +230,7 @@ Because it is a supporting ability, target RES is ignored, and a healing value e
 There are 6 different items, one is Potion and the other 5 are offensive, one for each type of damage in the game.
 The potion has a constant healing value, and the others have an attack value similar to ATK or MAG.
 
-## Characters Attributes
+### Characters Attributes
 | Parameter  | Tanker | Warrior | Mage |
 | :---: | :---: | :---: | :---: |
 | **HP Max** | 750 | 500 | 400 |
@@ -250,11 +250,11 @@ The potion has a constant healing value, and the others have an attack value sim
 
 [Back to top](#top)
 
-# About the AI
+## About the AI
 The AI was done using concepts of Artificial Neural Networks and Genetic Algorithm.
 During the game, each team has an Artificial Intelligence that symbolizes the player who controls them.
 
-## Neural network implemented
+### Neural network implemented
 The implemented Artificial Neural Network (ANN) has 27 neurons in the input layer and 12 neurons in the output layer.
 The ANN is responsible for deciding who will be the target of the character that received the turn.
 
@@ -266,7 +266,7 @@ and some context information, as if the target is an enemy and if he is defendin
 
 In the output layer, the result is the priority that the character will become the target and the priority to use each command.
 
-## Genetic Algorithm
+### Genetic Algorithm
 The genetic algorithm used to train the ANN has 40 individuals,
 each one has the matrix of ANN weights of a team.
 The flow of the algorithm developed is:
@@ -285,7 +285,7 @@ And then, through the crossover and mutation, an improved population is created,
 
 [Back to top](#top)
 
-# Results
+## Results
 After training the Artificial Intelligence during 50 generations,
 it was noticed that the characters learned to improve their performance with success,
 and with significant improvements in the early generations.
@@ -294,7 +294,7 @@ and with significant improvements in the early generations.
 
 [Back to top](#top)
 
-# Video
+## Video
 [![TCC - AI of RPG game: Youtube video](http://img.youtube.com/vi/blHZ4aY4BNU/0.jpg)](https://www.youtube.com/watch?v=blHZ4aY4BNU "TCC - AI of RPG game")
 
 [Back to top](#top)
@@ -308,7 +308,7 @@ and with significant improvements in the early generations.
 3. [結果](#結果)
 4. [ビデオ](#ビデオ)
 
-# ゲームについて
+## ゲームについて
 完全な説明については[ここにクリックして](https://github.com/mateus-etto/Monografia-IAJogoRPG/releases)、学術論文が読めます（ポルトガル語）。
 
 このプロジェクトでは、ターン性RPGゲームでキャラクターをコントロールする人工知能が作成されました。
@@ -316,7 +316,7 @@ and with significant improvements in the early generations.
 
 [トップに戻る](#top)
 
-## 属性
+### 属性
 ゲームの各キャラクターは次の属性で実装されました：
 
 **HP (体力):**
@@ -340,12 +340,12 @@ DEFと同等ですが、HPに与えられる魔法のダメージを軽減しま
 **SPD (速度):**
 速度の値が高いと、より短い時間でより多くのコマンドを実行出来ます。
 
-## ダメージの種類
+### ダメージの種類
 物理と魔法の2種類のダメージがあります。
 魔法のダメージは水、火、土、風のタイプがあります。
 それぞれのキャラクターは、弱い、中立的、または強いタイプのダメージに抵抗を持っています。
 
-## ダメージ計算
+### ダメージ計算
 物理的ダメージは次の式で計算されます：
 
 ![FormulaDanoFisico](images/en/DanoFisico.png)
@@ -354,7 +354,7 @@ DEFと同等ですが、HPに与えられる魔法のダメージを軽減しま
 
 ![FormulaDanoMagico](images/en/DanoMagico.png)
 
-## コマンド
+### コマンド
 キャラクターがターンを貰うと、
 4つの基本コマンドのうち、1つを選択出来ます：
 攻撃、防御、スキル、アイテムです。
@@ -377,7 +377,7 @@ MPを消費せず、少し物理的なダメージを与えます。
 6つのアイテムがあります。1つは回復薬、他の5つは攻撃的で、それぞれゲームに存在するダメージのタイプがあります。
 回復薬は一定の治癒値を持ち、他のものは攻撃がATKまたはMAGの値に似ています。
 
-## キャラクターの属性
+### キャラクターの属性
 | 属性  | タンカー | 戦士 | 魔道士 |
 | :---: | :---: | :---: | :---: |
 | HP Max | 750 | 500 | 400 |
@@ -397,11 +397,11 @@ MPを消費せず、少し物理的なダメージを与えます。
 
 [トップに戻る](#top)
 
-# 人工知能について
+## 人工知能について
 人工知能はニューラルネットワークと遺伝的アルゴリズムの概念が使われました。
 ゲーム中、各チームは制御する人工知能があり、それらはプレイヤーを象徴します。
 
-## ニューラルネットワークの実装
+### ニューラルネットワークの実装
 実装されたニューラルネットワークは、入力層に27個のニューロンを有し、出力層に12個のニューロンを有します。
 ニューラルネットワークは、ターンを受け取ったキャラクターの標的となる人物を決定する責任があります。
 
@@ -413,7 +413,7 @@ MPを消費せず、少し物理的なダメージを与えます。
 
 出力レイヤーでは、キャラクターがターゲットになる優先度と各コマンドを使用する優先度になります。
 
-## 遺伝的アルゴリズム
+### 遺伝的アルゴリズム
 ニューラルネットワークを訓練するために使用される遺伝的アルゴリズムは40人の個体を有し、
 それぞれにチームのニューラルネットワークに重みの行列を持っています。
 開発されたアルゴリズムの流れは次のイメージに表します。
@@ -432,7 +432,7 @@ MPを消費せず、少し物理的なダメージを与えます。
 
 [トップに戻る](#top)
 
-# 結果
+## 結果
 50代の人工知能を訓練した後、
 キャラクター達は戦いパフォーマンスが向上し、
 特に初期の世代で大幅な改善が見られました。
@@ -441,7 +441,7 @@ MPを消費せず、少し物理的なダメージを与えます。
 
 [トップに戻る](#top)
 
-# ビデオ
+## ビデオ
 [![TCC - AI of RPG game: Youtube video](http://img.youtube.com/vi/blHZ4aY4BNU/0.jpg)](https://www.youtube.com/watch?v=blHZ4aY4BNU "TCC - AI of RPG game")
 
 [トップに戻る](#top)
